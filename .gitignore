@@ -1,0 +1,13 @@
+node_modules
+out
+Include
+Scripts
+tcl
+Lib
+install.py
+pip-selfcheck.json
+xlab
+.vscode
+.env
+src/server
+src/api

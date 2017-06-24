@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        canvas {
+            background: rgba(20, 248, 145, 0.4)
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="cnv" width="400" height="400"></canvas>
+    <script>
+        var c1 = [200, 100],
+            c2 = [200, 130],
+            c3 = [300, 230],
+            alpha = 60;
+        var canvas = document.querySelector('#cnv');
+        var ctx = canvas.getContext('2d');
+        ctx.translate(0, 400);
+        ctx.scale(1, -1);
+
+
+        ctx.beginPath();
+        ctx.scale(0.5, 0.5);
+        ctx.moveTo(50, 100);
+        ctx.arc(...c1, 30, 0, 2 * Math.Pi, false);
+        ctx.arcTo(...c1, ...c2, alpha, false);
+        ctx.arcTo(...c1, ...c3, alpha, false);
+        ctx.arcTo(...c3, 225, 400, alpha, false);
+        ctx.lineTo(200, 276)
+        ctx.strokeStyle = 'rgba(125,23,258,.15)';
+        ctx.fillStyle = 'rgba(15,203,28,0.15)';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 20;
+
+        ctx.stroke();
+        ctx.closePath();
+        ctx.moveTo(50, 600);
+        ctx.lineTo(400, 470);
+        ctx.stroke();
+
+        //ctx.fillRect(0, 0, 120, 200);
+    </script>
+
+</body>
+
+</html>
