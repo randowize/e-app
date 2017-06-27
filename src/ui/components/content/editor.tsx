@@ -11,6 +11,7 @@ import Incdecr from './indecr';
 import Layout from './layout';
 import ColorPicker from './color-picker';
 import { HText } from './hoc';
+import CanvasRenderer from '../canvas-renderer';
 import {getMatrixTest} from '../../../tasks/matrix';
 
 import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
@@ -70,7 +71,7 @@ class Playground extends React.Component<any, IState> {
                 data={this.props.data}
               />
             </div>
-            <div />
+            <CanvasRenderer />
           </div>
           <div>
             <div>

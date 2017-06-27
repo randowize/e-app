@@ -1,14 +1,13 @@
 // import ucompose from 'ucompose';
 
-
-const extract = (w : number, h : number) => {
+const extract = (w: number, h: number) => {
     /** w = width of leds matrices */
     /** h = height of leds matrices */
 
-    return (hr_mat_count : number) => (x: number, y: number) => arr => {
+    return (hr_mat_count: number) => (x: number, y: number) => arr => {
         /** hr_mat_count = number of led matrices horizontally */
         /** x,y = position of the leds matrix */
-        const res : any[] = [];
+        const res: any[] = [];
         let shift = 0;
 
         const dx = ((x - 1) * w);
@@ -34,12 +33,12 @@ export const extractByte = extract(8, 1)(1);
 
 export const extractBlockOfFourBytes = extract(8, 4)(1);
 
-export const getUInt = (arr : number[]) => {
-    let res : any[] = [];
+export const getUInt = (arr: number[]) => {
+    let res: any[] = [];
     for (let i = 1; i <= 4; i += 1) {
       let parts = extractBytesColumn(i, 1)(arr);
-      let temp : any[] = [];
-      let part : any[];
+      let temp: any[] = [];
+      let part: any[];
       for (let j = 1; j <= 16; j += 1) {
         part = extractByte(1, j)(parts);
         temp.push(parseInt(part.join(''), 2));
@@ -50,15 +49,15 @@ export const getUInt = (arr : number[]) => {
     return res;
   };
 
-export const toCArrays = (arrs : any[]) => {
-    const res : any = {};
+export const toCArrays = (arrs: any[]) => {
+    const res: any = {};
     arrs.forEach((arr, i) => {
       res[`unsigned char panel_1${i + 1} [16]`] = `{${arr.join(',')}}`;
     });
     return res;
   };
 
-export const initializeGrouping = (i : number) => (size: number) => () => {
+export const initializeGrouping = (i: number) => (size: number) => () => {
     const col = i % size;
     i += 1;
     return col;
@@ -74,10 +73,11 @@ export const weirdConversion = (arr: any[]) => {
     }
   });
   return res;
-}
+};
+
 export type indices = [number, number];
 export const  getMatricesIndices = (rowScale, colScale) => {
-    const res : indices[] = [];
+    const res: indices[] = [];
     for (let i = 1; i <= rowScale; i++) {
       for (let j = 1; j <= colScale; j++) {
         res.push([j, i]);
@@ -85,4 +85,3 @@ export const  getMatricesIndices = (rowScale, colScale) => {
     }
     return res;
   };
-

@@ -1,6 +1,5 @@
 require('dotenv').config();
-
-import { app, BrowserWindow , ipcMain} from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
 
@@ -28,10 +27,14 @@ const createWindow = async () => {
   });
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
-
   // Open the DevTools.
   if (isDevMode) {
-    await installExtension(REACT_DEVELOPER_TOOLS);
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    try {
+      await installExtension(REACT_DEVELOPER_TOOLS);
+    } catch (e) {
+      console.log(e);
+    }
     mainWindow.webContents.openDevTools();
   }
 

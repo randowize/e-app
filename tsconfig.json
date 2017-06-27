@@ -20,9 +20,8 @@
         "jsx": "react",
         "experimentalDecorators": true,
         "lib": [
-            "webworker",
-            "esnext",
-            "esnext.asynciterable"
+            "es2017",
+            "dom"
         ]
     },
     "formatCodeOptions": {

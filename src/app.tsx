@@ -2,12 +2,13 @@ import * as React from 'react';
 import UI from './ui';
 import { Provider } from 'mobx-react';
 import Store from './ui/store';
-import {remote, ipcRenderer} from 'electron';
+import {ipcRenderer} from 'electron';
+
 
 export class App extends React.Component<undefined, undefined> {
 
   componentDidMount() {
-    ipcRenderer.on('ok', console.log);
+   // ipcRenderer.on('ok', console.log);
     const limit = f => i => (cb: () => void = () => null) => {
       if (i <= 0) {
         cb();
@@ -19,9 +20,9 @@ export class App extends React.Component<undefined, undefined> {
     const ti = setInterval(
       limit(() => {
         const data = Math.floor(Math.random() * 45);
-        console.log(`sendig ${data}...`);
+       // console.log(`sendig ${data}...`);
         ipcRenderer.send('data', data);
-      })(5),
+      })(1),
       1500,
       () => {
         console.log(`clearing timer ${ti}`);

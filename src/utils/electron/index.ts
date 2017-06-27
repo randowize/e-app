@@ -5,7 +5,7 @@ const { dialog } = remote;
 
 const options: any = {
   filters: [{ name: 'Pics', extensions: ['jpg', 'png', 'gif', 'bmp'] }],
-  defaultPath: path.resolve(__dirname, '../../../resources')
+  defaultPath: path.resolve(__dirname, '../../../src/resources')
 };
 
 export const selectImage = () => {

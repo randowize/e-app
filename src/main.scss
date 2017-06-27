@@ -43,10 +43,10 @@ $sliderHeight: 10px;
 }
 
 .led {
+    padding: 0.5rem 1rem;
     background: linear-gradient( to bottom, rgba(16, 14, 14, 0.89) 0%, rgba(33, 33, 33, 1) 100%);
     box-shadow: 0 1px 0 #fff, inset 0 1px #555;
     border: 1px solid #333;
-    padding: 0.5rem 1rem;
 }
 
 .led canvas {

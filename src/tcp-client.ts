@@ -18,7 +18,7 @@ client.on('close', function () {
     console.log('Connection closed');
 });
 
-export function sendMatrix(data : any) {
+export function sendMatrix(data: any) {
     return client.destroyed
         ? false
         : client.write(JSON.stringify(data));

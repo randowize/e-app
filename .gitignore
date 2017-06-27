@@ -11,3 +11,5 @@ xlab
 .env
 src/server
 src/api
+.gitignore
+*.map

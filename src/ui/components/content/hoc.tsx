@@ -45,7 +45,7 @@ const Text = ({ setName, ...rest }) =>
     </pre>*/}
     <button onClick={() => {
       // let y = Math.floor(Math.random() * rest.rowCount) + 1;
-      rest.debug(2);
+      rest.debug(1);
       //rest.showMatrices();
       rest.test().then(console.log);
     }}>
