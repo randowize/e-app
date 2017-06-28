@@ -18,7 +18,7 @@ import { getRGBA } from '../../utils/led-matrix/led/color';
 class LedStore {
   //body
   lines = [
-    '',
+    '😈İŞüıçÇÜğĞéê',
     ' "horizontal length": 5 ->',
     '',
     '  React is >>> Angular',
@@ -138,6 +138,12 @@ class LedStore {
     }
   }
 
+  @action processDataFromCanvas = (d) => {
+    this.matrix = d.matrix.map(o => ({
+        ...o,
+        color: getRGBA(this.color)
+    }));
+  }
   @computed
   get fontOptions() {
     const keys = Object.keys(allfonts);

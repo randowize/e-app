@@ -71,7 +71,10 @@ class Playground extends React.Component<any, IState> {
                 data={this.props.data}
               />
             </div>
-            <CanvasRenderer />
+            <CanvasRenderer
+              text={this.props.text}
+              processData={this.props.processData}
+            />
           </div>
           <div>
             <div>
@@ -143,7 +146,9 @@ const props = [
   'propModifier',
   'getPanelsAtRow',
   'choosePic',
-  'getMatrices'
+  'getMatrices',
+  'text',
+  {processDataFromCanvas: 'processData'}
 ];
 
 const injectors = [

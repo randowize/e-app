@@ -8,12 +8,14 @@ import { resolve } from 'path';
 const Tasks = remote.require(resolve(__dirname, '..', '..', '..', 'tasks'));
 
 export interface IProps {
+  [key: string]: any;
 }
 
 class Container extends React.Component<IProps, any> {
   canvas: HTMLCanvasElement;
   state = {
     src: '',
+    text: '😠↪🚐✈😎⏰⌛',
     loaded: false
   };
   getRef = (ref: HTMLCanvasElement) =>  {
@@ -33,21 +35,29 @@ class Container extends React.Component<IProps, any> {
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      text: nextProps.text
+    }, this.draw);
+  }
+
   draw = () => {
     const ctx = this.canvas.getContext('2d');
     if (ctx) {
       //ctx.fillRect(0, 0, 100, 100);
-      const text = '↗🚐✈😎⏰⌛';
-      ctx.font = ' normal  75px Arial';
+      ctx.clearRect(0, 0 , this.canvas.width, this.canvas.height);
+      ctx.font = ' normal  30px Arial';
+      const lineHeight = ctx.measureText('M').width;
       ctx.fillStyle = 'white';
-      ctx.fillText(text, 5,  ctx.measureText('M').width * 1 + 10);
-      ctx.fillText(" let's see!", 0,  ctx.measureText('M').width * 2 + 30);
-      console.log(ctx.measureText(text));
+      const text = this.state.text;
+      text.split(/\n/).forEach((chunk , i) => {
+        ctx.fillText(chunk, 0,  lineHeight * (i + 1) + 20 );
+        //ctx.fillText(" let's see!", 0,  ctx.measureText('M').width * 2 + 30);
+      });
       const src = this.canvas.toDataURL();
-      const bf = src.replace('data:image/png;base64,', '');
-      // console.log(bf);
-      Tasks.send(bf).then((d) => {
-        console.log(d);
+      const base64Img = src.replace('data:image/png;base64,', '');
+      Tasks.send(base64Img).then((d) => {
+        this.props.processData(d);
 
       }).catch(console.log);
       this.setState({
