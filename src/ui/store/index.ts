@@ -8,7 +8,7 @@ class Store {
     //body
     menuStore = new MenuStore();
     ledStore = new LedStore();
-
+ /*
     @observable text = '';
 
     @computed get value() {
@@ -17,7 +17,7 @@ class Store {
             .toUpperCase();
     }
 
-    @action setText = async(text : string) => {
+   @action setText = async(text : string) => {
         this.text = 'waiting...';
         await delay(1000);
         this.text = '';
@@ -26,6 +26,7 @@ class Store {
         .do( c => this.text += c)
         .subscribe(f => f);
     }
+    */
 }
 
 export default Store;

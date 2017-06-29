@@ -3,7 +3,7 @@ import Layout from './layouts/main-layout';
 import Menu from './components/menu';
 import Content from './components/content';
 
-export default function UI () {
+export default  function UI () {
     return (
       <Layout>
         <Menu />

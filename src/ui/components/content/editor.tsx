@@ -74,6 +74,9 @@ class Playground extends React.Component<any, IState> {
             <CanvasRenderer
               text={this.props.text}
               processData={this.props.processData}
+              width={this.props.cols}
+              height={this.props.rows}
+              font={this.props.font}
             />
           </div>
           <div>
@@ -148,6 +151,7 @@ const props = [
   'choosePic',
   'getMatrices',
   'text',
+   {activeFont: 'font'},
   {processDataFromCanvas: 'processData'}
 ];
 

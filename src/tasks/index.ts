@@ -1,16 +1,5 @@
-import * as cp from 'child_process';
+import {requireTaskPool} from 'electron-remote';
 
-export const send = d => new Promise( (res, rej) => {
-   const w = cp.fork(`${__dirname}\\transform-pixels.js`);
-    w.on('error', (e)  => rej(e))
-    if (w.send({data: d, ok: true})) {
-      w.on('message', (d) => {
-        res(d);
-        w.kill('SIGINT');
-      });
+const Tasks = requireTaskPool(require.resolve('../tasks/image-processing.ts'));
 
-    }else {
-      rej('Something went wrong!');
-      w.kill('SIGINT');
-    }
-});
+export default  Tasks;

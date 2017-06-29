@@ -22,7 +22,8 @@
         "allowJs": true,
         "lib": [
             "es2017",
-            "dom"
+            "dom",
+            "dom.iterable"
         ]
     },
     "formatCodeOptions": {

@@ -9,6 +9,7 @@ import {
   extractBlockOfFourBytes
 } from '../../utils';
 import allfonts from '../fonts';
+import webfonts from '../fonts/web-fonts';
 import { LedDrawerManager } from '../../utils/led-matrix/led/store';
 import { selectImage } from '../../utils/electron';
 import { getRGBA } from '../../utils/led-matrix/led/color';
@@ -27,8 +28,8 @@ class LedStore {
   ];
   @observable text: string = this.lines.join('\n');
   @observable activeFont: string = 'fivebyfive';
-  @observable rowScale: number = 2; // should be 4;
-  @observable colScale: number = 2; // should be 5
+  @observable rowScale: number = 4; // should be 4;
+  @observable colScale: number = 5; // should be 5
   @observable color: string = '#0feffe';
   @observable margin: number = 1;
   @observable glow: boolean = false;
@@ -69,13 +70,13 @@ class LedStore {
 
   private paint = () => {
     this.drawerManager.fillScreen(null);
-    this.drawerManager.write(
+    /*this.drawerManager.write(
       this.filteredText,
       allfonts[this.activeFont],
       this.color
-    );
+    );*/
     // this.drawerManager.refresh();
-    this.matrix = this.drawerManager.matrix;
+    //this.matrix = this.drawerManager.matrix;
   }
 
   @computed
@@ -146,7 +147,8 @@ class LedStore {
   }
   @computed
   get fontOptions() {
-    const keys = Object.keys(allfonts);
+    //const keys = Object.keys(allfonts);
+    const keys = webfonts.slice();
     const result: any[] = [];
     return keys.reduce((acc, key) => {
       acc.push({ value: key, label: key, className: 'option' });
@@ -163,11 +165,11 @@ class LedStore {
   }
   @computed
   get data() {
-    return this.matrix;
+    return this.matrix.slice();
   }
   @computed
   get dataP() {
-    return this.matrixP;
+    return this.matrixP.slice();
   }
 
   /** utils for panel extraction */
