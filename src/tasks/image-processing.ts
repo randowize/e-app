@@ -14,7 +14,12 @@ export const processImgBuffer = payload =>
           .resize(payload.width, payload.height)
           .quality(90)
           .grayscale()
-          .write(__dirname + '/../resources/save.bmp');
+          .write(__dirname + '/../resources/nimg.bmp');
+        oimg
+          .resize(payload.width, payload.height)
+          .quality(90)
+          .grayscale()
+          .write(__dirname + '/../resources/oimg.bmp');
         const clone = img.clone();
         const { width, height, data } = clone.bitmap;
         const pixels: any[] = [];

@@ -20,11 +20,7 @@ class LedStore {
   //body
   lines = [
     '😈İŞüıçÇÜğĞéê',
-    ' "horizontal length": 5 ->',
-    '',
-    '  React is >>> Angular',
-    '',
-    ' "vertical length": 4'
+    '😃🙌🌈™©'
   ];
   @observable text: string = this.lines.join('\n');
   @observable activeFont: string = 'fivebyfive';

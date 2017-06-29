@@ -3,7 +3,6 @@ import { CanvasRenderer } from './canvas-renderer';
 import * as webfont from 'webfontloader';
 import Tasks from '../../../tasks';
 
-
 export interface IProps {
   [key: string]: any;
 }
@@ -13,7 +12,8 @@ class Container extends React.Component<IProps, any> {
   state = {
     src: '',
     text: '',
-    loaded: false
+    loaded: false,
+    font: ''
   };
   getRef = (ref: HTMLCanvasElement) =>  {
     this.canvas = ref;
@@ -33,7 +33,7 @@ class Container extends React.Component<IProps, any> {
   }
 
   componentWillReceiveProps(nextProps) {
-    let props = ['text', 'activefont'];
+    let props = ['text', 'font'];
     const cond =  this.shouldCanvasUpdate(nextProps, props);
     console.log(cond);
     if (cond.res) {
@@ -57,7 +57,7 @@ class Container extends React.Component<IProps, any> {
     if (ctx) {
       //ctx.fillRect(0, 0, 100, 100);
       ctx.clearRect(0, 0 , this.canvas.width, this.canvas.height);
-      ctx.font = ' normal  50px Helvetica';
+      ctx.font = `normal  50px "${this.state.font}"`;
       const lineHeight = ctx.measureText('M').width;
       ctx.fillStyle = 'white';
       ctx.strokeStyle = 'green';
