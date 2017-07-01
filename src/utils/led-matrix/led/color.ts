@@ -1,4 +1,4 @@
-import { hexToRGB } from './tools';
+import { hexToRGB } from './utils';
 
 export interface IRGBA {
   r: number;

@@ -16,19 +16,16 @@ class TextEditor extends React.Component<TextEditorProps, any> {
   node: HTMLTextAreaElement |null ;
   componentDidMount() {
     if (this.node) {
-        registerListener(this.node);
-        //.subscribe(this.props.setText, console.error);
+        registerListener(this.node)
+        .subscribe(this.props.setText, console.error);
     }
 
   }
   render() {
-   console.log('called ...');
   return (
     <textarea
       style={{background: '#000', color: this.props.color}}
       ref={node => this.node = node}
-      value = {this.props.text}
-      onChange= {e => this.props.setText(e.target.value)}
     />
   );
 }

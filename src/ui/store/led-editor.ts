@@ -1,4 +1,4 @@
-import { observable, computed, action, reaction } from 'mobx';
+import { observable, computed, action, reaction , toJS} from 'mobx';
 import {groupBy} from 'lodash';
 import {
   extractPanel,
@@ -8,7 +8,6 @@ import {
   extractByte,
   extractBlockOfFourBytes
 } from '../../utils';
-import allfonts from '../fonts';
 import webfonts from '../fonts/web-fonts';
 import { LedDrawerManager } from '../../utils/led-matrix/led/store';
 import { selectImage } from '../../utils/electron';
@@ -19,22 +18,24 @@ import { getRGBA } from '../../utils/led-matrix/led/color';
 class LedStore {
   //body
   lines = [
-    '😈İŞüıçÇÜğĞéê',
+    '😈⛱🚀ℹ',
     '😃🙌🌈™©'
   ];
   @observable text: string = this.lines.join('\n');
   @observable activeFont: string = 'fivebyfive';
-  @observable rowScale: number = 4; // should be 4;
-  @observable colScale: number = 5; // should be 5
+  @observable rowScale: number = 2; // should be 4;
+  @observable colScale: number = 2; // should be 5
   @observable color: string = '#0feffe';
+  @observable colorRGBA = {r: 0, g: 0, b: 0, a: 1};
   @observable margin: number = 1;
   @observable glow: boolean = false;
   @observable animated: boolean = false;
   @observable pixelWidth: number = 10;
   @observable pixelHeight: number = 10;
   @observable pixelSize: number = 10;
-  @observable matrix: any = [];
-  @observable matrixP: any = [];
+  @observable matrix: any[] = [];
+  @observable matrixP: any[] = [];
+  @observable changed: any[] = [];
 
   private drawerManager: LedDrawerManager;
 
@@ -117,7 +118,9 @@ class LedStore {
   }
 
   @action setColor = (color: any) => {
+    console.log(color);
     this.color = color.hex;
+    this.colorRGBA = color.rgb;
   }
 
   @action choosePic = async () => {
@@ -137,6 +140,10 @@ class LedStore {
 
   @action processDataFromCanvas = (d) => {
     this.matrix = d.matrix.map(o => ({
+        ...o,
+        color: getRGBA(this.color)
+    }));
+    this.changed = d.changed.map(o => ({
         ...o,
         color: getRGBA(this.color)
     }));
@@ -162,6 +169,11 @@ class LedStore {
   @computed
   get data() {
     return this.matrix.slice();
+  }
+
+  @computed
+  get changes (){
+    return toJS(this.changed.slice());
   }
   @computed
   get dataP() {

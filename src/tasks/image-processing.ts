@@ -1,15 +1,30 @@
 import * as Jimp from 'jimp';
+import { LedMatrix } from '../utils/led-matrix';
+// import { LedDrawerManager } from '../utils/led-matrix/led/store';
 
 export const processImgBuffer = payload =>
   new Promise((res, rej) => {
-    console.log('which process');
+
     const nb64Img = payload.data.replace('data:image/png;base64,', '');
     const ob64Img = payload.odata.replace('data:image/png;base64,', '');
     const nimg = Jimp.read(Buffer.from(nb64Img, 'base64'));
     const oimg = Jimp.read(Buffer.from(ob64Img, 'base64'));
+    const canv = document.createElement('canvas');
     Promise.all([oimg, nimg])
-      .then(imgs => {
+      .then(async imgs => {
         const [oimg, img] = imgs;
+        canv.width = img.bitmap.width;
+        canv.height = img.bitmap.height;
+        const ctx = canv.getContext('2d');
+         const ledM = new LedMatrix(canv, {x: payload.width, y: payload.height});
+        const ui8arr = new Uint8ClampedArray(oimg.clone().greyscale().bitmap.data);
+        const id = new ImageData(ui8arr, oimg.bitmap.width, oimg.bitmap.height);
+        const bi = await createImageBitmap(id);
+        if (ctx) {
+          ctx.fillStyle = 'green';
+          //ctx.fillRect(0, 0, canv.width, canv.height);
+          ctx.drawImage(bi, 0, 0, canv.width, canv.height);
+        }
         img
           .resize(payload.width, payload.height)
           .quality(90)
@@ -22,22 +37,51 @@ export const processImgBuffer = payload =>
           .write(__dirname + '/../resources/oimg.bmp');
         const clone = img.clone();
         const { width, height, data } = clone.bitmap;
+        const {data: odata} = oimg.clone().bitmap;
         const pixels: any[] = [];
-        clone.scan(0, 0, width, height, (x, y, idx) =>
+        const opixels: any[] = [];
+        clone.scan(0, 0, width, height, (x, y, idx) => {
           pixels.push({
             r: data[idx],
             g: data[idx + 1],
             b: data[idx + 2],
             a: data[idx + 3]
-          })
+          });
+          opixels.push({
+            r: odata[idx],
+            g: odata[idx + 1],
+            b: odata[idx + 2],
+            a: odata[idx + 3]
+          });
+        }
         );
-        res({
+        const black = {r: 0, g: 0, b: 0, a: 1};
+        const matrix =  pixels.map(mapPixel).map(on => ({ on, color: on ? payload.color : black }));
+        // const omatrix =  opixels.map(mapPixel).map(on => ({ on, color: on ? payload.color : black }));
+        const changed = matrix.map( (o, i) => {
+          if (o.on !== payload.omatrix[i].on) {
+          return {
+            ...o,
+            idx: i,
+            diff: [o.on, payload.omatrix[i].on]
+          };
+        }
+          return null;
+        }).filter(o => o !== null);
+        ledM.setData(matrix.slice());
+        ledM.render();
+        const result = {
           width,
           height,
           pixels,
-          matrix: pixels.map(mapPixel).map(on => ({ on })),
-          data: [...clone.bitmap.data]
-        });
+          matrix,
+          diff: Jimp.diff(img, oimg),
+          data: [...clone.bitmap.data],
+          test: ledM.toDataURL(),
+          changed
+        };
+
+        res(result);
       })
       .catch(rej);
   });

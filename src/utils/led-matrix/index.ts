@@ -4,5 +4,5 @@ import 'core-js/fn/string/repeat';*/
 
 export * from './led/matrix';
 export * from './led/store';
-export * from './led/tools';
+export * from './led/utils';
 export * from './led/color';

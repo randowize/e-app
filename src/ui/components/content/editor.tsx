@@ -12,7 +12,7 @@ import Layout from './layout';
 import ColorPicker from './color-picker';
 import { HText } from './hoc';
 import CanvasRenderer from '../canvas-renderer';
-import {getMatrixTest} from '../../../tasks/matrix';
+
 
 import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
 
@@ -64,19 +64,23 @@ class Playground extends React.Component<any, IState> {
         </div>
         <div className='content'>
           <div className='3d-wrapper'>
-            <div className='led-panel-viewer'>
+            {/*<div className='led-panel-viewer'>
               <LedPanel
                 x={this.props.cols}
                 y={this.props.rows}
                 data={this.props.data}
+                changes={this.props.changes}
               />
-            </div>
+            </div>*/}
+            
             <CanvasRenderer
               text={this.props.text}
               processData={this.props.processData}
               width={this.props.cols}
               height={this.props.rows}
               font={this.props.font}
+              color={this.props.colorRGBA}
+              matrix={this.props.data}
             />
           </div>
           <div>
@@ -119,7 +123,7 @@ class Playground extends React.Component<any, IState> {
                    'ym': this.props.ym,
                    'showMatrices': this.props.getMatrices,
                   'debug': this.props.getPanelsAtRow,
-                  'test': getMatrixTest
+                  'test': f => f
                 }}
               />
             </div>
@@ -135,6 +139,7 @@ const props = [
     'xm',
     'ym',
   'color',
+  'colorRGBA',
   'rowScale',
   'colScale',
   'setRowScale',
@@ -151,6 +156,7 @@ const props = [
   'choosePic',
   'getMatrices',
   'text',
+  'changes',
    {activeFont: 'font'},
   {processDataFromCanvas: 'processData'}
 ];

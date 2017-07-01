@@ -75,6 +75,7 @@ const Container  = styled.div `
       &:nth-child(2){
         grid-template-columns: 1fr 3fr 0.5fr;
         grid-gap: 50px;
+        visibility: hidden;
         div{
           background: rgba(24, 25, 125, 1);
         }

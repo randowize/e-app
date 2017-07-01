@@ -1,4 +1,4 @@
-import { IMatrix } from "./store";
+import { IMatrix } from './store';
 
 export interface ILedMatrixOptions {
   x?: number;
@@ -15,7 +15,7 @@ const DEFAULT_OPTS: ILedMatrixOptions = {
   y: 16,
   pixelWidth: 10,
   pixelHeight: 10,
-  margin: 4,
+  margin: 10,
   glow: false,
   animated: false
 };
@@ -30,14 +30,19 @@ export class LedMatrix {
 
   constructor(canvas: HTMLCanvasElement, opts: ILedMatrixOptions = {}) {
     this.canvas = canvas;
-    this.ctx = this.canvas.getContext("2d");
+    this.ctx = this.canvas.getContext('2d');
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
     this.setup();
   }
 
   private setup = () => {
-    const width = this.opts.x * (this.opts.pixelWidth + this.opts.margin);
-    const height = this.opts.y * (this.opts.pixelHeight + this.opts.margin);
+    const x = this.opts.x || 32;
+    const y = this.opts.y || 16;
+    const pw = this.opts.pixelWidth || 10;
+    const ph = pw; // this.opts.pixelHeight + this.opts.margin
+    const margin = this.opts.margin || 10;
+    const width = x * (pw + margin);
+    const height = y * (ph + margin);
     this.canvas.width = width;
     this.canvas.height = height;
     // this.canvas.style.width = '100%' /*`${width / 2}px`*/;
@@ -58,7 +63,7 @@ export class LedMatrix {
     const margin = this.opts.margin || 10;
     const x = this.opts.x || 32;
     const y = this.opts.y || 16;
-   // const glow = this.opts.glow || false;
+    // const glow = this.opts.glow || false;
     const animated = this.opts.animated || false;
     let pixels;
     pixels = x * y;
@@ -71,14 +76,8 @@ export class LedMatrix {
 
     if (this.ctx) {
       for (let i = 0; i < pixels; i += 1) {
-        const { on, color } = this.data[i];
-        let rgba = '';
-        if (color) {
-          rgba = on
-            ? `rgba(${color.r},${color.g},${color.b},${color.a})`
-            : 'rgba(0,0,0,.1)';
-        }
-        this.renderPixelOnCanvas(i, rgba, x, this.ctx, pw, ph, margin );
+        let fillColor = this.getFillColor(this.data[i]);
+        this.renderPixelOnCanvas(i, fillColor, x, this.ctx, pw, ph, margin);
 
         /* if (animated) {
           dx -= this.offset;
@@ -116,18 +115,20 @@ export class LedMatrix {
     const ph = this.opts.pixelHeight || 10;
     const margin = this.opts.margin || 10;
     const x = this.opts.x || 32;
-    // const y = this.opts.y || 16;
+
     if (pixels.length > 0 && this.ctx) {
       pixels.forEach(px => {
-        this.renderPixelOnCanvas(px.i, px.rgba, x, this.ctx, pw, ph, margin);
+        const pxcolor = this.getFillColor(px);
+        this.renderPixelOnCanvas(px.idx, pxcolor, x, this.ctx, pw, ph, margin);
       });
     }
   }
 
-  private renderPixelOnCanvas(i, rgba, x, ctx, pw, ph, margin) {
+  private renderPixelOnCanvas(i, pxcolor, x, ctx, pw, ph, margin) {
     const dy = Math.floor(i / x);
     let dx = i - dy * x;
-    ctx.fillStyle = rgba;
+    ctx.fillStyle = pxcolor;
+    ctx.clearRect(dx * (pw + margin), dy * (ph + margin), pw, ph);
     ctx.fillRect(dx * (pw + margin), dy * (ph + margin), pw, ph);
   }
 
@@ -144,5 +145,18 @@ export class LedMatrix {
 
   setData(data: IMatrix) {
     this.data = data;
+  }
+  toDataURL() {
+    return this.canvas.toDataURL();
+  }
+  private getFillColor = px => {
+    const { on, color } = px;
+    let rgba = '';
+    if (color) {
+      rgba = on
+        ? `rgb(${color.r},${color.g},${color.b})`
+        : 'rgba(0,0,0,0.1)';
+    }
+    return rgba;
   }
 }

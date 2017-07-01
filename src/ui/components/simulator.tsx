@@ -36,23 +36,27 @@ class Simulator extends React.Component<IProps, IState> {
   componentWillReceiveProps(nextProps: IProps) {
     const { data, children, ...options } = nextProps;
     if (options !== this.state.options) {
-      this.led.setNewOptions(options);
-      this.setState({options}, this.draw);
+      //this.led.setNewOptions(options);
+      //this.setState({options});
     }
-
-    if (data !== this.state.data) {
+ 
+    /*if (data !== this.state.data) {
       // console.log(data);
       //console.log (this.state.data);
 
       this.led.setData(data);
       this.setState({data}, this.draw);
+    }*/
+    if (nextProps.changes.length > 0) {
+      console.log(nextProps.changes.length);
+      console.log(nextProps.changes.filter(o => !o.on));
+      this.led.update(nextProps.changes);
     }
-
-
   }
 
   draw = () => {
     this.led.render();
+    //this.led.update(this.props.changes);
   }
 
   render() {
