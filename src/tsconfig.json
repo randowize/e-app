@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "rootDir": ".",
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "declaration": false,
+        "noImplicitAny": false,
+        "noImplicitReturns": false,
+        "suppressImplicitAnyIndexErrors": false,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "noImplicitThis": true,
+        "noUnusedParameters": false,
+        "importHelpers": true,
+        "noEmitHelpers": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "pretty": true,
+        "target": "es2015",
+        "jsx": "react",
+        "experimentalDecorators": true,
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "outDir": "background",
+        "watch": true
+    },
+    "include": [
+        "tasks/**/*.ts",
+        "utils/**/*.ts"
+    ],
+    "formatCodeOptions": {
+        "indentSize": 2,
+        "tabSize": 2
+    }
+}

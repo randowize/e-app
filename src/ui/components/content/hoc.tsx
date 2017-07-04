@@ -46,8 +46,8 @@ const Text = ({ setName, ...rest }) =>
     <button onClick={() => {
       // let y = Math.floor(Math.random() * rest.rowCount) + 1;
       rest.debug(1);
-      //rest.showMatrices();
-      rest.test().then(console.log);
+      rest.showMatrices();
+      //rest.test().then(console.log);
     }}>
       view matrices
     </button>

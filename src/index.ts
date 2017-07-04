@@ -1,11 +1,56 @@
 require('dotenv').config();
-import { app, BrowserWindow, ipcMain } from 'electron';
+import  { app, BrowserWindow, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
+import * as cp from 'child_process';
+import * as path from 'path';
+import * as Rx from 'rxjs';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
+let previewWindow: Electron.BrowserWindow | null = null;
+
+//const fop : cp.ForkOptions;
+const pname = path.resolve(__dirname, 'background', 'worker.js');
+const child = cp.fork(pname, undefined, {
+  stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+  env: {
+    ELECTRON_RUN_AS_NODE: 1
+  },
+  cwd: path.resolve(__dirname, 'background')
+});
+
+const msgevt: any = 'message';
+const childResponseStream = Rx.Observable.fromEventPattern(
+  l => child.addListener(msgevt, l),
+  l => child.removeListener(msgevt, l)
+);
+const debugMessagesStream = childResponseStream.filter((m: any) => m.type === 'debug');
+const refreshPreviewStream = childResponseStream.filter((m: any) => m.type === 'refresh');
+
+debugMessagesStream.subscribe(console.log);
+refreshPreviewStream.subscribe( m => {
+  if (previewWindow) {
+    previewWindow.webContents.send('refresh', m);
+  };
+});
+
+child.on('close', console.log);
+child.on('disconnect', console.log);
+child.on('error', console.log);
+
+ipcMain.on('refresh', (e, d) => {
+  if (previewWindow) {
+    previewWindow.webContents.send(d.type, d);
+  };
+});
+
+ipcMain.on('process-img', (e, payload) => {
+  if (child.connected) {
+    child.send({type: 'process-img', payload});
+  };
+});
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
@@ -21,12 +66,26 @@ const createWindow = async () => {
     }
   });
 
+  previewWindow = new BrowserWindow({
+    width: 320 ,
+    height: 240,
+    webPreferences: {
+      experimentalFeatures: true
+    },
+    frame: false,
+    title: 'Preview',
+    movable: true,
+    alwaysOnTop: true
+  });
+
   ipcMain.on('data', (evt, data) => {
     evt.sender.send('ok', `data ${data} received`);
     console.log(data);
   });
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
+  previewWindow.loadURL(`file://${__dirname}/preview.html`);
+
   // Open the DevTools.
   if (isDevMode) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -35,7 +94,7 @@ const createWindow = async () => {
     } catch (e) {
       console.log(e);
     }
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
   }
 
   // Emitted when the window is closed.

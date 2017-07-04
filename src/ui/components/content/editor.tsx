@@ -13,7 +13,6 @@ import ColorPicker from './color-picker';
 import { HText } from './hoc';
 import CanvasRenderer from '../canvas-renderer';
 
-
 import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
 
 export type colsOrRows = 'cols' | 'rows';
@@ -123,7 +122,7 @@ class Playground extends React.Component<any, IState> {
                    'ym': this.props.ym,
                    'showMatrices': this.props.getMatrices,
                   'debug': this.props.getPanelsAtRow,
-                  'test': f => f
+                  'test': this.props.getMatrices
                 }}
               />
             </div>

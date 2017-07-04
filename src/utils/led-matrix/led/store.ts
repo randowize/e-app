@@ -2,21 +2,21 @@
  * This file is heavily inspired by:
  * https://github.com/adafruit/Adafruit-GFX-Library
  * Released under the BSD License.
- * 
+ *
  * It has been ported to Javascript from C source code
  * by Sallar Kaboli to be used inside this project.
- * 
+ *
  * Copyright (c) 2012 Adafruit Industries. All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright notice,
  *   this list of conditions and the following disclaimer.
  * - Redistributions in binary form must reproduce the above copyright notice,
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,7 +52,7 @@ export class LedDrawerManager {
     this.fillScreen(null);
   }
 
-  setSize(row: number, column: number){
+  setSize(row: number, column: number) {
     this.x = row;
     this.y = column;
   }
@@ -88,7 +88,7 @@ export class LedDrawerManager {
             if (col[y] === '1') {
               this.fill(
                 x + (i * CHAR_WIDTH),
-                y-1 + (line * CHAR_HEIGHT),
+                y - 1 + (line * CHAR_HEIGHT),
                 r, g, b, a
               );
             }
@@ -158,16 +158,16 @@ export class LedDrawerManager {
 
   drawRoundRect(x: number, y: number, w: number, h: number, r: number, color: IRGBA) {
     // Lines
-    this.drawFastHLine(x+r  , y    , w-2*r, color); // Top
-    this.drawFastHLine(x+r  , y+h-1, w-2*r, color); // Bottom
-    this.drawFastVLine(x    , y+r  , h-2*r, color); // Left
-    this.drawFastVLine(x+w-1, y+r  , h-2*r, color); // Right
+    this.drawFastHLine(x + r  , y    , w - 2 * r, color); // Top
+    this.drawFastHLine(x + r  , y + h   - 1,   w   - 2 * r, color); // Bottom
+    this.drawFastVLine(x    , y  + r  , h - 2 * r, color); // Left
+    this.drawFastVLine(x   + w - 1, y + r  , h - 2 * r, color); // Right
 
     // Corners
-    this.drawCircleHelper(x+r    , y+r    , r, 1, color);
-    this.drawCircleHelper(x+w-r-1, y+r    , r, 2, color);
-    this.drawCircleHelper(x+w-r-1, y+h-r-1, r, 4, color);
-    this.drawCircleHelper(x+r    , y+h-r-1, r, 8, color);
+    this.drawCircleHelper(x + r    , y + r    , r, 1, color);
+    this.drawCircleHelper(x   + w - r - 1, y + r    , r, 2, color);
+    this.drawCircleHelper(x   + w - r - 1, y + h - r   - 1, r, 4, color);
+    this.drawCircleHelper(x   + r    , y + h - r - 1, r, 8, color);
   }
 
   drawTriangle(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, color: IRGBA) {
@@ -196,7 +196,7 @@ export class LedDrawerManager {
       if (cornername & 0x4) {
         this.drawPixel(x1 + x, y1 + y, color);
         this.drawPixel(x1 + y, y1 + x, color);
-      } 
+      }
 
       if (cornername & 0x2) {
         this.drawPixel(x1 + x, y1 - y, color);
@@ -222,12 +222,12 @@ export class LedDrawerManager {
     let x = 0;
     let y = r;
 
-    this.drawPixel(x1  , y1+r, color);
-    this.drawPixel(x1  , y1-r, color);
-    this.drawPixel(x1+r, y1  , color);
-    this.drawPixel(x1-r, y1  , color);
-    
-    while (x<y) {
+    this.drawPixel(x1  , y1   + r, color);
+    this.drawPixel(x1  , y1   - r, color);
+    this.drawPixel(x1   + r, y1  , color);
+    this.drawPixel(x1   - r, y1  , color);
+
+    while (x   < y) {
       if (f >= 0) {
         y--;
         ddF_y += 2;
@@ -236,7 +236,7 @@ export class LedDrawerManager {
       x++;
       ddF_x += 2;
       f += ddF_x;
-    
+
       this.drawPixel(x1 + x, y1 + y, color);
       this.drawPixel(x1 - x, y1 + y, color);
       this.drawPixel(x1 + x, y1 - y, color);
@@ -270,9 +270,9 @@ export class LedDrawerManager {
   }
 
   fillRoundRect(x: number, y: number, w: number, h: number, r: number, color: IRGBA) {
-    this.fillRect(x+r, y, w-2*r, h, color);
-    this.fillCircleHelper(x+w-r-1, y+r, r, 1, h-2*r-1, color);
-    this.fillCircleHelper(x+r    , y+r, r, 2, h-2*r-1, color);
+    this.fillRect(x + r, y, w - 2 * r, h, color);
+    this.fillCircleHelper(x + w   - r - 1, y + r, r, 1,   h   - 2 * r - 1, color);
+    this.fillCircleHelper(x + r    , y + r, r, 2, h   -   2 * r - 1, color);
   }
 
   fillCircleHelper(x1: number, y1: number, r: number, cornername: number, delta: number, color: IRGBA) {
@@ -293,13 +293,13 @@ export class LedDrawerManager {
       f     += ddF_x;
 
       if (cornername & 0x1) {
-        this.drawFastVLine(x1 + x, y1 - y, 2*y+1+delta, color);
-        this.drawFastVLine(x1 + y, y1 - x, 2*x+1+delta, color);
+        this.drawFastVLine(x1 + x, y1 - y, 2 * y   + 1 + delta, color);
+        this.drawFastVLine(x1 + y, y1 - x, 2 * x   + 1 + delta, color);
       }
 
       if (cornername & 0x2) {
-        this.drawFastVLine(x1 - x, y1 - y, 2*y+1+delta, color);
-        this.drawFastVLine(x1 - y, y1 - x, 2*x+1+delta, color);
+        this.drawFastVLine(x1 - x, y1 - y, 2 * y   + 1 + delta, color);
+        this.drawFastVLine(x1 - y, y1 - x, 2 * x   + 1 + delta, color);
       }
     }
   }
@@ -329,11 +329,11 @@ export class LedDrawerManager {
     // Handle awkward all-on-same-line case as its own thing
     if (y0 === y2) {
       a = b = x0;
-      if(x1 < a)      a = x1;
-      else if(x1 > b) b = x1;
-      if(x2 < a)      a = x2;
-      else if(x2 > b) b = x2;
-      this.drawFastHLine(a, y0, b-a+1, color);
+      if (x1 < a)      a = x1;
+      else if (x1 > b) b = x1;
+      if (x2 < a)      a = x2;
+      else if (x2 > b) b = x2;
+      this.drawFastHLine(a, y0, b   - a + 1, color);
       return;
     }
 

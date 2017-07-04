@@ -45,9 +45,7 @@ export class LedMatrix {
     const height = y * (ph + margin);
     this.canvas.width = width;
     this.canvas.height = height;
-    // this.canvas.style.width = '100%' /*`${width / 2}px`*/;
-    // this.canvas.style.height = '100%' /*`${height / 2}px`*/;
-  };
+  }
 
   render(): void {
     if (this.rAF) {

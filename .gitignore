@@ -15,3 +15,6 @@ src/api
 *.map
 src/resources/P10-2.bmp
 src/resources/P10.bmp
+src/tasks/server
+number.txt
+getTasks.js

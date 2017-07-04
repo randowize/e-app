@@ -9,7 +9,7 @@ export interface IRGBA {
 
 export type IColor = IRGBA | string | number;
 
-export function getRGBA(hexStr: IColor): IRGBA | null {
+export function getRGBA(hexStr: IColor): IRGBA  {
   if (typeof hexStr === 'object' && typeof hexStr.r !== 'undefined') {
     return { ...hexStr };
   } else if (typeof hexStr === 'string' || typeof hexStr === 'number') {
@@ -18,7 +18,7 @@ export function getRGBA(hexStr: IColor): IRGBA | null {
       r, g, b, a: 1
     };
   }
-  return null;
+  return {r: 0, b: 0, g: 0, a: 1};
 }
 
 export class Color {

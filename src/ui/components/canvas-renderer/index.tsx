@@ -2,7 +2,12 @@ import * as React from 'react';
 import { CanvasRenderer } from './canvas-renderer';
 import * as webfont from 'webfontloader';
 import Tasks from '../../../tasks';
-
+import {
+  textStream,
+  nextTextEvent,
+  refreshPreview
+} from '../../listeners/text-change';
+import {ipcRenderer} from 'electron';
 
 export interface IProps {
   [key: string]: any;
@@ -11,7 +16,7 @@ export interface IProps {
 class Container extends React.Component<IProps, any> {
   canvas: HTMLCanvasElement;
   cnvrenderer: HTMLCanvasElement | null;
-  rnimg : HTMLImageElement | null;
+  rnimg: HTMLImageElement | null;
   state = {
     src: '',
     src2: '',
@@ -20,20 +25,30 @@ class Container extends React.Component<IProps, any> {
     loaded: false,
     font: ''
   };
+
+  constructor(props) {
+    super(props);
+    // refreshStream.take(1).subscribe(this.draw);
+  }
   getRef = (ref: HTMLCanvasElement) => {
     this.canvas = ref;
-  };
+  }
 
   componentDidMount() {
-    const draw = this.draw.bind(this);
+    textStream
+      .startWith(nextTextEvent(this.props.text))
+      .map(o => o.text)
+      .map(this.extractPayload)
+      .debounceTime(1000)
+      .do(p => ipcRenderer.send('process-img', p))
+      .switchMap(payload => Tasks.processImgBuffer(payload))
+      .subscribe((d: any) => refreshPreview(d.url));
     webfont.load({
       google: {
         families: ['Droid Sans', 'Droid Serif', 'Bungee Shade']
       },
       loading() {
-        setTimeout(() => {
-          draw();
-        }, 0);
+
         console.log('loaded');
       }
     });
@@ -42,23 +57,23 @@ class Container extends React.Component<IProps, any> {
   componentWillReceiveProps(nextProps) {
     let props = ['text', 'font'];
     const cond = this.shouldCanvasUpdate(nextProps, props);
-    console.log(cond);
-    if (cond.res) {
-      this.setState(cond.state, this.draw);
+    //console.log(cond);
+    if (cond.update) {
+      this.setState(cond.state);
     }
   }
   private shouldCanvasUpdate(props, propsNames: any[]) {
     return propsNames.reduce(
       (acc, key) => {
-        acc.res = acc.res || props[key] !== this.state[key];
+        acc.update = acc.update || props[key] !== this.state[key];
         Object.assign(acc.state, { [key]: props[key] });
         return acc;
       },
-      { res: false, state: {} }
+      { update: false, state: {} }
     );
   }
 
-  draw = () => {
+  private extractPayload = (textv: string) => {
     const ctx = this.canvas.getContext('2d');
     const odata = this.canvas.toDataURL();
     const width = this.props.width;
@@ -70,14 +85,17 @@ class Container extends React.Component<IProps, any> {
       const lineHeight = ctx.measureText('M').width;
       ctx.fillStyle = 'white';
       ctx.strokeStyle = 'green';
-      const text = this.state.text;
+      // const text = this.state.text;
+      const text = textv;
       text.split(/\n/).forEach((chunk, i) => {
         const dy = i ? 40 : 20;
         ctx.fillText(chunk, 0, lineHeight * (i + 1) + dy);
         ctx.strokeText(chunk, 0, lineHeight * (i + 1) + dy);
-        //ctx.fillText(" let's see!", 0,  ctx.measureText('M').width * 2 + 30);
       });
       const ndata = this.canvas.toDataURL();
+      this.setState({
+        src: ndata
+      });
       const payload = {
         data: ndata,
         width,
@@ -86,40 +104,18 @@ class Container extends React.Component<IProps, any> {
         color: this.props.color,
         omatrix: this.props.matrix
       };
-      Tasks.processImgBuffer(payload)
-        .then(d => {
-          this.setState({ src2: d.test}, () => {
-            const img = new Image(this.props.width, this.props.height);
-            img.onload = () => {
-              if (this.cnvrenderer) {
-                /*const ctx = this.cnvrenderer.getContext('2d');
-                if (ctx) {
-                  ctx.clearRect(0, 0, this.cnvrenderer.width, this.cnvrenderer.height);
-                  ctx.fillStyle = 'rgba(24, 25, 175,0.1)';
-                  ctx.fillRect(0, 0, this.cnvrenderer.width, this.cnvrenderer.height);
-                  ctx.drawImage(
-                    img,
-                    0,
-                    0,
-                    this.cnvrenderer.width,
-                    this.cnvrenderer.height
-                  );
-                }*/
-              }
-            };
-            img.src = this.state.src2;
-          });
-          //this.props.processData(d);
-        })
-        .catch(console.log);
-      this.setState({
-        src: ndata
-      });
+      return payload;
     }
-  };
+  }
+  draw = d => {
+    console.log(d);
+    if (this.rnimg && d) {
+      this.rnimg.src = d.url;
+    }
+  }
   render() {
     return (
-      <div style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div style={{ gridTemplateColumns: '1fr', gridGap: '20px' }}>
         <CanvasRenderer
           getRef={this.getRef}
           width={300}
@@ -144,8 +140,7 @@ class Container extends React.Component<IProps, any> {
           }}
         />
         <img
-          ref={node => this.rnimg = node}
-          src={this.state.src2}
+          ref={node => (this.rnimg = node)}
           alt='canvas generated'
           height={`${this.props.height}px`}
           width={`${this.props.width}px`}

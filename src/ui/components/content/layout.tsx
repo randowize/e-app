@@ -64,7 +64,7 @@ const Container  = styled.div `
     &>div{
       display: grid;
       &:nth-child(1){
-        grid-template-columns: 4fr 1fr;
+        grid-template-columns: 1fr;
         grid-gap: 20px;
         height:100%;
         &>div{

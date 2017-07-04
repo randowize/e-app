@@ -39,7 +39,6 @@ class Simulator extends React.Component<IProps, IState> {
       //this.led.setNewOptions(options);
       //this.setState({options});
     }
- 
     /*if (data !== this.state.data) {
       // console.log(data);
       //console.log (this.state.data);
@@ -47,7 +46,7 @@ class Simulator extends React.Component<IProps, IState> {
       this.led.setData(data);
       this.setState({data}, this.draw);
     }*/
-    if (nextProps.changes.length > 0) {
+    if (nextProps.changes && nextProps.changes.length > 0) {
       console.log(nextProps.changes.length);
       console.log(nextProps.changes.filter(o => !o.on));
       this.led.update(nextProps.changes);

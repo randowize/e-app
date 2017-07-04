@@ -17,7 +17,8 @@ class TextEditor extends React.Component<TextEditorProps, any> {
   componentDidMount() {
     if (this.node) {
         registerListener(this.node)
-        .subscribe(this.props.setText, console.error);
+        .do(this.props.setText)
+        .subscribe(f => f, console.error);
     }
 
   }
