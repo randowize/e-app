@@ -18,3 +18,5 @@ src/resources/P10.bmp
 src/tasks/server
 number.txt
 getTasks.js
+typings.json
+typings
