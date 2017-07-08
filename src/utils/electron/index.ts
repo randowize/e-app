@@ -1,7 +1,7 @@
-import { remote } from 'electron';
+import * as electron from 'electron';
 import * as path from 'path';
 import * as jimp from 'jimp';
-const { dialog } = remote;
+const { dialog } = electron.remote;
 
 const options: any = {
   filters: [{ name: 'Pics', extensions: ['jpg', 'png', 'gif', 'bmp'] }],

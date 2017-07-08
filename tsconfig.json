@@ -14,11 +14,11 @@
         "importHelpers": true,
         "noEmitHelpers": true,
         "module": "commonjs",
+        "experimentalDecorators": true,
         "moduleResolution": "node",
         "pretty": true,
         "target": "es2015",
         "jsx": "react",
-        "experimentalDecorators": true,
         "allowJs": true,
         "lib": [
             "es2017",

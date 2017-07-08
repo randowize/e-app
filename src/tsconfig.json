@@ -20,6 +20,7 @@
         "target": "es2015",
         "jsx": "react",
         "experimentalDecorators": true,
+        "allowJs": true,
         "lib": [
             "es2017",
             "dom"
@@ -28,8 +29,7 @@
         "watch": true
     },
     "include": [
-        "tasks/**/*.ts",
-        "utils/**/*.ts"
+        "*/**/*.ts"
     ],
     "formatCodeOptions": {
         "indentSize": 2,

@@ -23,7 +23,6 @@ function getMatrixTest() {
         let dizi3 = [];
         let dizi4 = [];
         const img = yield Jimp.read(path.resolve('../resources/P10-2.bmp'));
-        // const bmp = bmpAs2DArray(img);
         function applyToArray(carr, dx = 0, dy = 0) {
             let pixel_x, pixel_y, pixel;
             let X, Y, sutun;
@@ -46,7 +45,6 @@ function getMatrixTest() {
                         else {
                             pixel = pixel + Math.pow(2, pixel_x);
                         }
-                        // tslint:disable-next-line:curly
                         if (carr[satir] === undefined)
                             carr[satir] = [];
                         carr[satir][satir_1[blok * 4 + sutun]] = pixel;

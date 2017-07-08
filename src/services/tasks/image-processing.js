@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const Jimp = require("jimp");
 const led_matrix_1 = require("../utils/led-matrix");
-// import { LedDrawerManager } from '../utils/led-matrix/led/store';
 exports.processImgBuffer = payload => new Promise((res, rej) => {
     const nb64Img = payload.data.replace('data:image/png;base64,', '');
     const ob64Img = payload.odata.replace('data:image/png;base64,', '');
@@ -22,19 +21,15 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         const bi = yield createImageBitmap(id);
         if (ctx) {
             ctx.fillStyle = 'green';
-            //ctx.fillRect(0, 0, canv.width, canv.height);
             ctx.drawImage(bi, 0, 0, canv.width, canv.height);
         }
         img
             .resize(payload.width, payload.height)
             .quality(90)
             .grayscale();
-        //.write(__dirname + '/../resources/nimg.bmp');
         oimg
             .resize(payload.width, payload.height)
             .quality(90);
-        //.grayscale();
-        //.write(__dirname + '/../resources/oimg.bmp');
         const clone = img.clone();
         const { width, height, data } = clone.bitmap;
         const { data: odata } = oimg.clone().bitmap;
@@ -56,7 +51,6 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         });
         const black = { r: 0, g: 0, b: 0, a: 1 };
         const matrix = pixels.map(mapPixel).map(on => ({ on, color: on ? payload.color : black }));
-        // const omatrix =  opixels.map(mapPixel).map(on => ({ on, color: on ? payload.color : black }));
         const changed = matrix.map((o, i) => {
             if (o.on !== payload.omatrix[i].on) {
                 return Object.assign({}, o, { idx: i, diff: [o.on, payload.omatrix[i].on] });
@@ -85,6 +79,5 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
 function mapPixel(pixel) {
     if (pixel.r > 20 || pixel.g > 20 || pixel.b > 20)
         return true;
-    //if (pixel.b > 250) return true;
     return false;
 }

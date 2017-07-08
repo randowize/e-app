@@ -3,6 +3,7 @@ import {inject, observer} from 'mobx-react';
 export const propsSelectionFromStore = storeName => part => (...propsNames) => component => {
     return inject(stores => {
         const store = stores[storeName][part] || stores[storeName];
+        if (propsNames.length <= 0 && part) return {[part]: store};
         return propsNames.reduce((prev, prop) => {
             let propsToMapTo: any[];
             let key;

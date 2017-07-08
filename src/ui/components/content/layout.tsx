@@ -60,7 +60,7 @@ const Container  = styled.div `
     background: rgba(124, 255, 255, 1);
      background: white;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr 3fr;
+    grid-template-rows: 3fr 3fr 2fr;
     &>div{
       display: grid;
       &:nth-child(1){
@@ -75,13 +75,13 @@ const Container  = styled.div `
       &:nth-child(2){
         grid-template-columns: 1fr 3fr 0.5fr;
         grid-gap: 50px;
-        visibility: hidden;
         div{
           background: rgba(24, 25, 125, 1);
         }
       }
       &:nth-child(3){
         grid-template-columns: 2fr 6fr 4fr;
+        /*visibility: hidden;*/
         grid-gap: 30px;
         textarea{
           height:80%;

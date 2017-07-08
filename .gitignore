@@ -6,7 +6,7 @@ tcl
 Lib
 install.py
 pip-selfcheck.json
-xlab
+src-xlab
 .vscode
 .env
 src/server

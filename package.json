@@ -1,127 +1,129 @@
 {
-    "name": "electron-app",
-    "productName": "electron-app",
-    "version": "1.0.0",
-    "description": "My Electron application description",
-    "main": "src/index.ts",
-    "scripts": {
-        "start": "electron-forge start",
-        "package": "electron-forge package",
-        "make": "electron-forge make",
-        "lint": "tslint src",
-        "cp-tasks": "tsc --project ./src"
-    },
-    "keywords": [],
-    "author": "lamine",
-    "license": "MIT",
-    "config": {
-        "forge": {
-            "make_targets": {
-                "win32": [
-                    "squirrel"
-                ],
-                "darwin": [
-                    "zip"
-                ],
-                "linux": [
-                    "deb",
-                    "rpm"
-                ]
-            },
-            "electronPackagerConfig": {},
-            "electronWinstallerConfig": {
-                "name": "electron_app"
-            },
-            "electronInstallerDebian": {},
-            "electronInstallerRedhat": {},
-            "github_repository": {
-                "owner": "",
-                "name": ""
-            },
-            "windowsStoreConfig": {
-                "packageName": "",
-                "name": "electronapp"
-            }
-        }
-    },
-    "dependencies": {
-        "@types/chokidar": "1.7.0",
-        "@types/core-js": "0.9.41",
-        "@types/dotenv": "4.0.0",
-        "@types/electron": "^1.6.10",
-        "@types/fabric": "1.5.24",
-        "@types/immutable": "3.8.7",
-        "@types/jimp": "0.2.1",
-        "@types/lodash": "4.14.64",
-        "@types/node": "^7.0.31",
-        "@types/prop-types": "15.5.1",
-        "@types/react-color": "2.11.1",
-        "@types/react-icons": "2.2.1",
-        "@types/react-select": "1.0.46",
-        "@types/recompose": "0.23.0",
-        "anypixel": "1.0.2",
-        "bdf": "1.0.1",
-        "bootstrap": "^3.3.7",
-        "canvas": "^1.6.5",
-        "chokidar": "^1.7.0",
-        "core-js": "2.4.1",
-        "dotenv": "^4.0.0",
-        "electron": "^1.6.11",
-        "electron-remote": "^1.1.2",
-        "font-awesome": "^4.7.0",
-        "fontawesome": "^4.7.2",
-        "immutable": "^3.8.1",
-        "jimp": "^0.2.28",
-        "lodash": "4.17.4",
-        "mobx": "3.1.9",
-        "mobx-react": "4.1.8",
-        "promise-mysql": "3.0.1",
-        "prop-types": "^15.5.10",
-        "react": "^15.4.1",
-        "react-color": "2.11.7",
-        "react-desktop": "0.3.0",
-        "react-dom": "^15.4.1",
-        "react-fontawesome": "1.6.1",
-        "react-hot-loader": "3.0.0-beta.7",
-        "react-icons": "2.2.5",
-        "react-rangeslider": "2.0.1",
-        "react-select": "1.0.0-rc.4",
-        "recompose": "0.23.5",
-        "rxjs": "5.1.x",
-        "styled-components": "1.4.6",
-        "ts-node": "^3.1.0",
-        "ucompose": "0.1.6",
-        "webfontloader": "^1.6.28"
-    },
-    "devDependencies": {
-        "@types/electron-devtools-installer": "2.0.2",
-        "@types/express": "4.0.35",
-        "@types/express-graphql": "0.0.33",
-        "@types/graphql": "0.9.1",
-        "@types/random-seed": "0.3.2",
-        "@types/react": "^15.0.31",
-        "@types/react-dom": "^15.5.1",
-        "@types/three": "0.84.7",
-        "b-spline": "2.0.1",
-        "babel-plugin-transform-async-to-generator": "^6.24.1",
-        "babel-preset-env": "^1.4.0",
-        "babel-preset-react": "^6.24.1",
-        "devtron": "^1.4.0",
-        "electron-devtools-installer": "^2.2.0",
-        "electron-prebuilt-compile": "1.6.11",
-        "eslint": "3.19.0",
-        "eslint-plugin-react": "7.0.1",
-        "exdat": "0.6.2",
-        "express": "4.15.3",
-        "express-graphql": "0.6.5",
-        "graphql": "0.9.6",
-        "led-matrix": "0.1.2",
-        "random-seed": "0.3.0",
-        "sass-lint": "1.10.2",
-        "svg-path-parser": "1.0.1",
-        "three": "0.85.2",
-        "tslib": "1.7.1",
-        "tslint": "^4.2.0",
-        "typescript": "~2.3.x"
+  "name": "electron-app",
+  "productName": "electron-app",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "lint": "tslint src",
+    "cp-tasks": "tsc --project ./src-xlab"
+  },
+  "keywords": [],
+  "author": "lamine",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {},
+      "electronWinstallerConfig": {
+        "name": "electron_app"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "electronapp"
+      }
     }
+  },
+  "dependencies": {
+    "@types/chokidar": "1.7.0",
+    "@types/core-js": "0.9.41",
+    "@types/dotenv": "4.0.0",
+    "@types/electron": "^1.6.10",
+    "@types/esprima": "2.1.33",
+    "@types/fabric": "1.5.24",
+    "@types/immutable": "3.8.7",
+    "@types/jimp": "0.2.1",
+    "@types/lodash": "4.14.64",
+    "@types/node": "^7.0.31",
+    "@types/prop-types": "15.5.1",
+    "@types/react-color": "2.11.1",
+    "@types/react-icons": "2.2.1",
+    "@types/react-select": "1.0.46",
+    "@types/recompose": "0.23.0",
+    "anypixel": "1.0.2",
+    "bdf": "1.0.1",
+    "bootstrap": "^3.3.7",
+    "canvas": "^1.6.5",
+    "chokidar": "^1.7.0",
+    "core-js": "2.4.1",
+    "dotenv": "^4.0.0",
+    "electron": "^1.6.11",
+    "electron-remote": "^1.1.2",
+    "esprima": "^4.0.0",
+    "font-awesome": "^4.7.0",
+    "fontawesome": "^4.7.2",
+    "immutable": "^3.8.1",
+    "jimp": "^0.2.28",
+    "lodash": "4.17.4",
+    "mobx": "3.1.9",
+    "mobx-react": "4.1.8",
+    "promise-mysql": "3.0.1",
+    "prop-types": "^15.5.10",
+    "react": "^15.4.1",
+    "react-color": "2.11.7",
+    "react-desktop": "0.3.0",
+    "react-dom": "^15.4.1",
+    "react-fontawesome": "1.6.1",
+    "react-hot-loader": "3.0.0-beta.7",
+    "react-icons": "2.2.5",
+    "react-rangeslider": "2.0.1",
+    "react-select": "1.0.0-rc.4",
+    "recompose": "0.23.5",
+    "rxjs": "5.1.x",
+    "styled-components": "1.4.6",
+    "ts-node": "^3.1.0",
+    "ucompose": "0.1.6",
+    "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "@types/electron-devtools-installer": "2.0.2",
+    "@types/express": "4.0.35",
+    "@types/express-graphql": "0.0.33",
+    "@types/graphql": "0.9.1",
+    "@types/random-seed": "0.3.2",
+    "@types/react": "^15.0.31",
+    "@types/react-dom": "^15.5.1",
+    "@types/three": "0.84.7",
+    "b-spline": "2.0.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.4.0",
+    "babel-preset-react": "^6.24.1",
+    "devtron": "^1.4.0",
+    "electron-devtools-installer": "^2.2.0",
+    "electron-prebuilt-compile": "1.6.11",
+    "eslint": "3.19.0",
+    "eslint-plugin-react": "7.0.1",
+    "exdat": "0.6.2",
+    "express": "4.15.3",
+    "express-graphql": "0.6.5",
+    "graphql": "0.9.6",
+    "led-matrix": "0.1.2",
+    "random-seed": "0.3.0",
+    "sass-lint": "1.10.2",
+    "svg-path-parser": "1.0.1",
+    "three": "0.85.2",
+    "tslib": "1.7.1",
+    "tslint": "^4.2.0",
+    "typescript": "~2.3.x"
+  }
 }

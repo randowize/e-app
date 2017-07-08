@@ -1,20 +1,24 @@
 import {ipcRenderer} from 'electron';
+
+import { baseObservable } from './shared/streams/base-observable';
+import { addRxStreamCapabilityToIpcModule } from './shared/streams/rx-ipc';
+
+addRxStreamCapabilityToIpcModule(ipcRenderer);
+
 const img: any = document.getElementById('img');
+
+baseObservable
+.filter(e => e.type === 'refresh')
+.map(e => e.data[0].src)
+.switchMap(src =>  fetch(src).then(res => res.blob()))
+.subscribe(blob => {
+  img.src = URL.createObjectURL(blob);
+});
+
 if (img) {
   img.onload = () => {
-    console.log('revoking ' + img.src);
     URL.revokeObjectURL(img.src);
   };
 }
-ipcRenderer.on('img-refresh', (_, res) => {
-  if (img) {
-    //img.src = d.src;
-    //img.src = URL.createObjectURL(res.d.url);
-  }
-});
 
-ipcRenderer.on('refresh', async (_, res) => {
-  //console.log(d);
-   const blob = await fetch(res.d.url).then(res => res.blob());
-  img.src = URL.createObjectURL(blob);
-});
+//ipcRenderer.on('message', () => {/**/});

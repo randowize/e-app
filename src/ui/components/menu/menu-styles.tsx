@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 export const Ul = styled.ul `
-    list-style: none;
+    list-style: ${(props: any) => props.show ? 'block' : 'none'};
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -30,3 +30,5 @@ export const Li = styled.li `
         color:#ff0
     }
 `;
+
+export const VALUE = 5;

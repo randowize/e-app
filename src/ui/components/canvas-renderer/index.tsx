@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { CanvasRenderer } from './canvas-renderer';
 import * as webfont from 'webfontloader';
-import Tasks from '../../../tasks';
+import Tasks from '../../../services/tasks';
 import {
   textStream,
   nextTextEvent,
   refreshPreview
-} from '../../listeners/text-change';
-import {ipcRenderer} from 'electron';
+} from '../../../shared/streams/text-change';
+//import {ipcRenderer} from 'electron';
 
 export interface IProps {
   [key: string]: any;
@@ -16,7 +16,6 @@ export interface IProps {
 class Container extends React.Component<IProps, any> {
   canvas: HTMLCanvasElement;
   cnvrenderer: HTMLCanvasElement | null;
-  rnimg: HTMLImageElement | null;
   state = {
     src: '',
     src2: '',
@@ -25,10 +24,10 @@ class Container extends React.Component<IProps, any> {
     loaded: false,
     font: ''
   };
-
   constructor(props) {
     super(props);
     // refreshStream.take(1).subscribe(this.draw);
+
   }
   getRef = (ref: HTMLCanvasElement) => {
     this.canvas = ref;
@@ -40,7 +39,8 @@ class Container extends React.Component<IProps, any> {
       .map(o => o.text)
       .map(this.extractPayload)
       .debounceTime(1000)
-      .do(p => ipcRenderer.send('process-img', p))
+      .do( p => this.props.sendIpcMessage('process-img', p))
+      //.do(p => ipcRenderer.send('process-img', p))
       .switchMap(payload => Tasks.processImgBuffer(payload))
       .subscribe((d: any) => refreshPreview(d.url));
     webfont.load({
@@ -81,7 +81,7 @@ class Container extends React.Component<IProps, any> {
     if (ctx) {
       //ctx.fillRect(0, 0, 100, 100);
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      ctx.font = `normal  90px "${this.state.font}"`;
+      ctx.font = `normal  60px "${this.state.font}"`;
       const lineHeight = ctx.measureText('M').width;
       ctx.fillStyle = 'white';
       ctx.strokeStyle = 'green';
@@ -109,9 +109,6 @@ class Container extends React.Component<IProps, any> {
   }
   draw = d => {
     console.log(d);
-    if (this.rnimg && d) {
-      this.rnimg.src = d.url;
-    }
   }
   render() {
     return (
@@ -138,13 +135,6 @@ class Container extends React.Component<IProps, any> {
             display: 'none',
             background: 'rgba(255,255,255,0)'
           }}
-        />
-        <img
-          ref={node => (this.rnimg = node)}
-          alt='canvas generated'
-          height={`${this.props.height}px`}
-          width={`${this.props.width}px`}
-          style={{ height: '100%', width: '100%' }}
         />
       </div>
     );

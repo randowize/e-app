@@ -3,8 +3,6 @@ import * as Jimp from 'jimp';
 import { LedMatrix } from '../utils/led-matrix';
 import * as Canvas from 'canvas';
 
-//import { LedDrawerManager } from '../utils/led-matrix/led/store';
-
 const Image = Canvas.Image;
 
 export const processImgBuffer = payload =>

@@ -1,35 +1,4 @@
 "use strict";
-/**
- * This file is heavily inspired by:
- * https://github.com/adafruit/Adafruit-GFX-Library
- * Released under the BSD License.
- *
- * It has been ported to Javascript from C source code
- * by Sallar Kaboli to be used inside this project.
- *
- * Copyright (c) 2012 Adafruit Industries. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- * - Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 const color_1 = require("./color");
 class LedDrawerManager {
@@ -44,7 +13,6 @@ class LedDrawerManager {
         this.y = column;
     }
     fill(x = 0, y = 0, r = 0, g = 0, b = 0, a = 1) {
-        // If not in boundries, dont paint
         if (x < this.x && y < this.y) {
             this.matrix[(y * this.x) + x] = {
                 on: true,
@@ -58,15 +26,11 @@ class LedDrawerManager {
         const CHAR_WIDTH = font[0].length;
         const CHAR_HEIGHT = font[0][0].length;
         lines.forEach((ch, line) => {
-            // For each character
             for (let i = 0; i < ch.length; i += 1) {
                 const ind = ch.charCodeAt(i) - 32;
                 const fontRow = font[ind];
-                // For each column
                 for (let x = 0; x < CHAR_WIDTH; x += 1) {
                     const col = fontRow[x];
-                    //console.log(col);
-                    // For each pixel
                     for (let y = 0; y < CHAR_HEIGHT; y += 1) {
                         if (col[y] === '1') {
                             this.fill(x + (i * CHAR_WIDTH), y - 1 + (line * CHAR_HEIGHT), r, g, b, a);
@@ -125,12 +89,10 @@ class LedDrawerManager {
         this.drawFastVLine(x + w - 1, y, h, color);
     }
     drawRoundRect(x, y, w, h, r, color) {
-        // Lines
-        this.drawFastHLine(x + r, y, w - 2 * r, color); // Top
-        this.drawFastHLine(x + r, y + h - 1, w - 2 * r, color); // Bottom
-        this.drawFastVLine(x, y + r, h - 2 * r, color); // Left
-        this.drawFastVLine(x + w - 1, y + r, h - 2 * r, color); // Right
-        // Corners
+        this.drawFastHLine(x + r, y, w - 2 * r, color);
+        this.drawFastHLine(x + r, y + h - 1, w - 2 * r, color);
+        this.drawFastVLine(x, y + r, h - 2 * r, color);
+        this.drawFastVLine(x + w - 1, y + r, h - 2 * r, color);
         this.drawCircleHelper(x + r, y + r, r, 1, color);
         this.drawCircleHelper(x + w - r - 1, y + r, r, 2, color);
         this.drawCircleHelper(x + w - r - 1, y + h - r - 1, r, 4, color);
@@ -259,7 +221,6 @@ class LedDrawerManager {
     }
     fillTriangle(x0, y0, x1, y1, x2, y2, color) {
         let a, b, y, last;
-        // Sort coordinates by Y order (y2 >= y1 >= y0)
         if (y0 > y1) {
             [y0, y1] = [y1, y0];
             [x0, x1] = [x1, x0];
@@ -272,7 +233,6 @@ class LedDrawerManager {
             [y0, y1] = [y1, y0];
             [x0, x1] = [x1, x0];
         }
-        // Handle awkward all-on-same-line case as its own thing
         if (y0 === y2) {
             a = b = x0;
             if (x1 < a)
@@ -287,31 +247,19 @@ class LedDrawerManager {
             return;
         }
         let dx01 = x1 - x0, dy01 = y1 - y0, dx02 = x2 - x0, dy02 = y2 - y0, dx12 = x2 - x1, dy12 = y2 - y1, sa = 0, sb = 0;
-        // For upper part of triangle, find scanline crossings for segments
-        // 0-1 and 0-2.  If y1=y2 (flat-bottomed triangle), the scanline y1
-        // is included here (and second loop will be skipped, avoiding a /0
-        // error there), otherwise scanline y1 is skipped here and handled
-        // in the second loop...which also avoids a /0 error here if y0=y1
-        // (flat-topped triangle).
         last = (y1 === y2) ?
             y1 :
-            y1 - 1; // Skip it
+            y1 - 1;
         for (y = y0; y <= last; y++) {
             a = x0 + sa / dy01;
             b = x0 + sb / dy02;
             sa += dx01;
             sb += dx02;
-            /* longhand:
-            a = x0 + (x1 - x0) * (y - y0) / (y1 - y0);
-            b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
-            */
             if (a > b) {
                 [a, b] = [b, a];
             }
             this.drawFastHLine(a, y, b - a + 1, color);
         }
-        // For lower part of triangle, find scanline crossings for segments
-        // 0-2 and 1-2.  This loop is skipped if y1=y2.
         sa = dx12 * (y - y1);
         sb = dx02 * (y - y0);
         for (; y <= y2; y++) {
@@ -319,10 +267,6 @@ class LedDrawerManager {
             b = x0 + sb / dy02;
             sa += dx12;
             sb += dx02;
-            /* longhand:
-            a = x1 + (x2 - x1) * (y - y1) / (y2 - y1);
-            b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
-            */
             if (a > b) {
                 [a, b] = [b, a];
             }

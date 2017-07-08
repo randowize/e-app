@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { selectProps } from '../../../utils/props-selector';
 // import styled from 'styled-components';
-import registerListener from '../../listeners/text-change';
+import registerListener from '../../../shared/streams/text-change';
 
 export interface TextEditorProps {
   [key: string]: any;

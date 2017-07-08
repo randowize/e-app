@@ -17,7 +17,7 @@ class LedMatrix {
             const x = this.opts.x || 32;
             const y = this.opts.y || 16;
             const pw = this.opts.pixelWidth || 10;
-            const ph = pw; // this.opts.pixelHeight + this.opts.margin
+            const ph = pw;
             const margin = this.opts.margin || 10;
             const width = x * (pw + margin);
             const height = y * (ph + margin);
@@ -52,31 +52,16 @@ class LedMatrix {
         const margin = this.opts.margin || 10;
         const x = this.opts.x || 32;
         const y = this.opts.y || 16;
-        // const glow = this.opts.glow || false;
         const animated = this.opts.animated || false;
         let pixels;
         pixels = x * y;
         if (this.data.length !== pixels) {
-            // throw new Error('`data` needs to be provided fully. Length is insufficient.');
-            // console.log(this.data.length, pixels);
             pixels = this.data.length;
-            //return;
         }
         if (this.ctx) {
             for (let i = 0; i < pixels; i += 1) {
                 let fillColor = this.getFillColor(this.data[i]);
                 this.renderPixelOnCanvas(i, fillColor, x, this.ctx, pw, ph, margin);
-                /* if (animated) {
-                  dx -= this.offset;
-                  dx = dx < 0 ? x - 1 - Math.abs(dx) : dx;
-                }
-                */
-                /*if (glow && on) {
-                  this.ctx.shadowBlur = 5;
-                  this.ctx.shadowColor = rgba;
-                } else {
-                  this.ctx.shadowBlur = 0;
-                }*/
             }
         }
         if (animated) {

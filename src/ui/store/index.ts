@@ -1,6 +1,10 @@
-import {observable, computed, action} from 'mobx';
-import * as Rx from 'rxjs';
-import {delay} from '../../utils/timers';
+//import {observable, computed, action} from 'mobx';
+//import * as Rx from 'rxjs';
+//import {delay} from '../../utils/timers';
+import { refreshStream } from '../../shared/streams/text-change';
+import { ipcMessageSenderFactory } from '../../shared/streams/rx-ipc';
+import {ipcRenderer} from 'electron';
+
 import MenuStore from './menu';
 import LedStore from './led-editor';
 
@@ -8,6 +12,13 @@ class Store {
     //body
     menuStore = new MenuStore();
     ledStore = new LedStore();
+    sendIpcMessage = ipcMessageSenderFactory(ipcRenderer);
+
+    constructor() {
+        refreshStream.subscribe(d => {
+            this.sendIpcMessage('refresh', d);
+        });
+    }
  /*
     @observable text = '';
 

@@ -11,9 +11,11 @@ import Incdecr from './indecr';
 import Layout from './layout';
 import ColorPicker from './color-picker';
 import { HText } from './hoc';
+import SendBox  from '../send-box';
 import CanvasRenderer from '../canvas-renderer';
-
+import * as client from '../../../tcp-client';
 import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
+// import { close } from '../../../tcp-client';
 
 export type colsOrRows = 'cols' | 'rows';
 
@@ -36,6 +38,11 @@ class Playground extends React.Component<any, IState> {
     this.marginModifier = props.propModifier('margin');
   }
 
+  componentDidMount() {
+    client.connect()
+    .then(console.log)
+    .catch(console.error);
+  }
   render() {
     return (
       <Layout className={this.props.menuType}>
@@ -60,6 +67,13 @@ class Playground extends React.Component<any, IState> {
           />
           <hr />
           <ColorPicker />
+          <SendBox val='0' label='v1'/>
+          <SendBox val='1' label='v2'/>
+          <SendBox val='2' label='v3'/>
+          <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <button onClick={() => client.reconnect()}>reconnect</button>
+          <button onClick={() => client.close()}>disconnect</button>
+          </div>
         </div>
         <div className='content'>
           <div className='3d-wrapper'>
@@ -80,7 +94,29 @@ class Playground extends React.Component<any, IState> {
               font={this.props.font}
               color={this.props.colorRGBA}
               matrix={this.props.data}
+              sendIpcMessage={this.props.sendIpcMessage}
             />
+          </div>
+                    <div>
+            <div> 
+                <button onClick={() => {this.props.sendIpcMessage('toggle-preview'); }}>
+                  Toggle Preview 
+                 </button>
+            </div>
+            <TextEditor />
+            <div>
+              <HText
+                {...{
+                  'colCount': this.props.colScale,
+                  'rowCount': this.props.rowScale,
+                   'xm': this.props.xm,
+                   'ym': this.props.ym,
+                   'showMatrices': this.props.getMatrices,
+                  'debug': this.props.getPanelsAtRow,
+                  'test': this.props.getMatrices
+                }}
+              />
+            </div>
           </div>
           <div>
             <div>
@@ -102,29 +138,6 @@ class Playground extends React.Component<any, IState> {
             </div>
             <div>
               <Incdecr label='Pixel Size' action={this.pixelSizeModifier} />
-            </div>
-          </div>
-          <div>
-            <div> 
-                <button
-                    onClick={this.props.choosePic}
-                >
-                    select image
-                </button>
-            </div>
-            <TextEditor />
-            <div>
-              <HText
-                {...{
-                  'colCount': this.props.colScale,
-                  'rowCount': this.props.rowScale,
-                   'xm': this.props.xm,
-                   'ym': this.props.ym,
-                   'showMatrices': this.props.getMatrices,
-                  'debug': this.props.getPanelsAtRow,
-                  'test': this.props.getMatrices
-                }}
-              />
             </div>
           </div>
 
@@ -161,6 +174,7 @@ const props = [
 ];
 
 const injectors = [
+  selectProps('sendIpcMessage')(),
   selectProps('menuStore')('menuType'),
   selectProps('ledStore')(...props)
 ];

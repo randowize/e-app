@@ -2,11 +2,11 @@ import * as React from 'react';
 import {selectProps} from '../../../utils/props-selector';
 import styled from 'styled-components';
 
-const Container : any = styled.div`
+const Container: any = styled.div`
 `;
 
 export interface IProps {
-  [key : string] : any;
+  [key: string]: any;
 }
 
 const Indecr : React.StatelessComponent < IProps > = (props) => (
