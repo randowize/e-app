@@ -57,9 +57,11 @@ class Container extends React.Component<IProps, any> {
   componentWillReceiveProps(nextProps) {
     let props = ['text', 'font'];
     const cond = this.shouldCanvasUpdate(nextProps, props);
-    //console.log(cond);
+    console.log(cond);
     if (cond.update) {
-      this.setState(cond.state);
+      this.setState(cond.state, () => {
+        this.extractPayload(nextProps.text);
+      });
     }
   }
   private shouldCanvasUpdate(props, propsNames: any[]) {
@@ -81,7 +83,9 @@ class Container extends React.Component<IProps, any> {
     if (ctx) {
       //ctx.fillRect(0, 0, 100, 100);
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      ctx.font = `normal  60px "${this.state.font}"`;
+      console.log(this.state.font);
+      let font  = `normal 90px ${this.state.font}`;
+      ctx.font = font;
       const lineHeight = ctx.measureText('M').width;
       ctx.fillStyle = 'white';
       ctx.strokeStyle = 'green';
@@ -116,14 +120,14 @@ class Container extends React.Component<IProps, any> {
         <CanvasRenderer
           getRef={this.getRef}
           width={300}
-          style={{ background: 'rgba(125,15,125,0.75)', display: 'none' }}
+          style={{ background: 'rgba(125,15,125,0.75)', display: 'inherit' }}
         />
         <img
           src={this.state.src}
           alt='canvas generated'
           height={`${this.props.height}px`}
           width={`${this.props.width}px`}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: '100%', width: '100%', display: 'none'}}
         />
         <canvas
           ref={node => (this.cnvrenderer = node)}

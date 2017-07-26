@@ -20,3 +20,6 @@ number.txt
 getTasks.js
 typings.json
 typings
+typings/index.d.ts
+vdom
+yarn-error.log

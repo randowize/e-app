@@ -1,4 +1,3 @@
-import { dispatch } from './streams/base-observable';
 export interface IPCEvent  {
   type: string;
   [key: string]: any;

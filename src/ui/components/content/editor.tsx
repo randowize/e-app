@@ -13,7 +13,7 @@ import ColorPicker from './color-picker';
 import { HText } from './hoc';
 import SendBox  from '../send-box';
 import CanvasRenderer from '../canvas-renderer';
-import * as client from '../../../tcp-client';
+import * as client from '../../../services/client-tcp';
 import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
 // import { close } from '../../../tcp-client';
 

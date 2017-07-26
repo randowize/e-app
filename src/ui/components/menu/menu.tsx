@@ -1,14 +1,14 @@
 import * as React from 'react';
 import * as Fa from 'react-fontawesome';
-import {selectProps} from '../../../utils/props-selector';
 import {Ul, Li} from './menu-styles';
+import {selectProps} from '../../../utils/props-selector';
 
 export interface IProps {
-    [key: string] : any;
-    menuItems: any[];
+    [key: string]: any;
+    menuItems?: any[];
 }
 
-const Menu: React.StatelessComponent < IProps > = (props) => (
+export const Menu: React.StatelessComponent<IProps> = (props) => (
     <Ul>
         {props
             .menuItems
@@ -31,5 +31,4 @@ Menu.defaultProps = {
 };
 
 const props = ['menuItems', 'onMenuItemClick', 'activeItem'];
-
 export default selectProps('menuStore')(...props)(Menu);

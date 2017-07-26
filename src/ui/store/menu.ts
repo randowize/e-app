@@ -1,12 +1,12 @@
 import { observable, computed, action } from 'mobx';
 
-
 export default class MenuStore {
     //body
      @observable  icons = [
        {name: 'home', id: 1},
        {name: 'search', id: 2},
-       {name: 'rocket', id: 3}
+       {name: 'rocket', id: 3},
+       {name: 'eye', id: 4}
        ];
     @observable menuClass = 'has-options';
     @observable activeMenuItem: number = 1;

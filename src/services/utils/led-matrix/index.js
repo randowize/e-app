@@ -1,9 +1,7 @@
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./led/matrix"));
-__export(require("./led/store"));
-__export(require("./led/utils"));
-__export(require("./led/color"));
+const tslib_1 = require("tslib");
+tslib_1.__exportStar(require("./led/matrix"), exports);
+tslib_1.__exportStar(require("./led/store"), exports);
+tslib_1.__exportStar(require("./led/utils"), exports);
+tslib_1.__exportStar(require("./led/color"), exports);

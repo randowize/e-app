@@ -25,7 +25,7 @@ client.on('close', function () {
 export function sendMatrix(data: any) {
     return client.destroyed
         ? false
-        : client.write(JSON.stringify(data));
+        : client.write(data);
 
 }
 

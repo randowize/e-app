@@ -13,6 +13,7 @@ import {ipcMessageSenderFactory } from '../shared/streams/rx-ipc';
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
 let previewWindow: Electron.BrowserWindow | null = null;
+let modelWindow: Electron.BrowserWindow | null = null;
 let previewSendIpcMessage: (evtName: EventName, ...data) => void;
 const isDevMode = process.execPath.match(/[\\/]electron/);
 //const fop : cp.ForkOptions;
@@ -28,6 +29,9 @@ const setupIpcCom = () => {
   const refreshStream = baseObservable.filter(m => m.type === 'refresh');
   const processImageStream = baseObservable.filter(m => m.type === 'process-img');
   const togglePreviewStream = baseObservable.filter(m => m.type === 'toggle-preview');
+  const debugStream = baseObservable.filter(m => m.type === 'debug');
+
+  debugStream.subscribe((d) => console.log(d.type));
 
   refreshStream.subscribe(e => {
     if (previewWindow) {
@@ -59,7 +63,7 @@ const setupWorker = () => {
     },
     cwd: path.resolve(__dirname, 'background')
   });
-
+  img_proc_worker.on('message', console.log);
   img_proc_worker.on('close', console.log);
   img_proc_worker.on('disconnect', console.log);
   img_proc_worker.on('error', console.log);
@@ -88,9 +92,22 @@ const createWindow = async () => {
     show: false
   });
 
+  modelWindow = new BrowserWindow({
+    width: 320,
+    height: 240,
+    webPreferences: {
+      experimentalFeatures: true
+    },
+    frame: true,
+    title: 'Model',
+    movable: true,
+    show: true
+  });
+
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/../index.html`);
-  previewWindow.loadURL(`file://${__dirname}/../preview.html`);
+  mainWindow.loadURL(`file://${__dirname}/../screens/index.html`);
+  previewWindow.loadURL(`file://${__dirname}/../screens/preview.html`);
+  modelWindow.loadURL(`file://${__dirname}/../screens/prototyping.html`);
 
   // Open the DevTools.
   if (isDevMode) {
@@ -110,6 +127,8 @@ const createWindow = async () => {
     // when you should delete the corresponding element.
     mainWindow = null;
     if (previewWindow) previewWindow.close();
+    if (modelWindow) modelWindow.close();
+    modelWindow = null;
     previewWindow = null;
   });
 

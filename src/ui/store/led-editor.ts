@@ -22,7 +22,7 @@ class LedStore {
     '😃🙌🌈™©'
   ];
   @observable text: string = this.lines.join('\n');
-  @observable activeFont: string = 'fivebyfive';
+  @observable activeFont: string = 'Monospace';
   @observable rowScale: number = 2; // should be 4;
   @observable colScale: number = 2; // should be 5
   @observable color: string = '#0feffe';

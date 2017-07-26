@@ -5,6 +5,5 @@ exports.dbgMessage = message => {
         process.send({ type: 'debug', message });
     }
     else {
-        console.log('not ok');
     }
 };

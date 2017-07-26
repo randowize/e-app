@@ -6,7 +6,7 @@ import {selectProps} from '../../../utils/props-selector';
 //const Container : any = styled.div``;
 
 export interface IProps {
-  [key : string] : any;
+  [key: string]: any;
 }
 
 const ColorPicker : React.StatelessComponent < IProps > = (props) => (

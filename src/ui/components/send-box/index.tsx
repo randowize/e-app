@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as client from '../../../tcp-client';
+import * as client from '../../../services/client-tcp';
 import { ipcRenderer } from 'electron';
 import { ipcMessageSenderFactory } from '../../../shared/streams/rx-ipc';
 

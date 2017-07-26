@@ -1,6 +1,6 @@
 import * as Rx from 'rxjs';
 
-export type EventName = 'text-change' | 'toggle-preview'| 'test' | 'refresh' | 'process-img';
+export type EventName = 'debug'|'text-change' | 'toggle-preview'| 'test' | 'refresh' | 'process-img';
 
 export interface IEvent {
   type: EventName;

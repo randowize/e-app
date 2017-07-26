@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const utils_1 = require("./utils");
 const Jimp = require("jimp");
 const led_matrix_1 = require("../utils/led-matrix");
 const Canvas = require("canvas");
+const matrix_1 = require("./matrix");
 const Image = Canvas.Image;
 exports.processImgBuffer = payload => new Promise((res, rej) => {
     const nb64Img = payload.data.replace('data:image/png;base64,', '');
@@ -21,7 +21,6 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         bi.src = oimg.clone().greyscale().bitmap.data;
         if (ctx) {
             ctx.fillStyle = 'green';
-            utils_1.dbgMessage('img drawn');
         }
         img
             .resize(payload.width, payload.height)
@@ -59,19 +58,17 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         }).filter(o => o !== null);
         ledM.setData(matrix.slice());
         ledM.render();
-        utils_1.dbgMessage('ledM.render() ok');
-        let test = ledM.toDataURL();
-        utils_1.dbgMessage('ledM.toDataURL() ok');
-        const url = test;
+        const url = ledM.toDataURL();
+        let mtcp = yield matrix_1.getMatrixFromPixelsArray(pixels.slice(0), img.bitmap.width, img.bitmap.height);
         const result = {
             width,
             height,
             pixels,
             matrix,
-            diff: Jimp.diff(img, oimg),
             data: [...clone.bitmap.data],
             url,
-            changed
+            changed,
+            mtcp
         };
         res(result);
     }))

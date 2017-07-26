@@ -1,4 +1,5 @@
 import * as React from 'react';
+import './utils/ranges';
 import UI from './ui';
 import { Provider } from 'mobx-react';
 import Store from './ui/store';

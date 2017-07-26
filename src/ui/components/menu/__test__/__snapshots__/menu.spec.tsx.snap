@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<ul
+  className="enXgyU"
+>
+  <li
+    className="cThqVQ"
+    onClick={[Function]}
+  >
+    <span
+      aria-hidden={true}
+      className="fa fa-bus"
+    />
+  </li>
+</ul>
+`;

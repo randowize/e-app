@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Preview</title>
+    <style>
+        body {
+            -webkit-app-region: drag;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            margin: 0;
+        }
+        
+        img {
+            background: rgba(25, 186, 204, 0.15);
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <img alt="preview" id="img" />
+    <script type="text/tsx">
+        require('../reload');
+    </script>
+</body>
+
+</html>
