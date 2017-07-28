@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 import { app, BrowserWindow } from 'electron';
 import installExtension, {
   REACT_DEVELOPER_TOOLS
@@ -14,7 +15,8 @@ import {ipcMessageSenderFactory } from '../shared/streams/rx-ipc';
 let mainWindow: Electron.BrowserWindow | null = null;
 let previewWindow: Electron.BrowserWindow | null = null;
 let modelWindow: Electron.BrowserWindow | null = null;
-let previewSendIpcMessage: (evtName: EventName, ...data) => void;
+let sendPreviewIpcMsg: (evtName: EventName, ...data) => void;
+let sendMatrixIpcMsg: (evtName: EventName, ...data) => void;
 const isDevMode = process.execPath.match(/[\\/]electron/);
 //const fop : cp.ForkOptions;
 const pname = path.resolve(__dirname, '..', 'services', 'worker.js');
@@ -24,19 +26,22 @@ const setupIpcCom = () => {
   // configureIpcMessage(ipcMain);
   if (previewWindow && mainWindow) {
 
-  previewSendIpcMessage = ipcMessageSenderFactory(previewWindow.webContents);
-  //const mainIpcMessageSender = ipcMessageSenderFactory(mainWindow.webContents);
+  sendPreviewIpcMsg = ipcMessageSenderFactory(previewWindow.webContents);
+  sendMatrixIpcMsg = ipcMessageSenderFactory(mainWindow.webContents);
   const refreshStream = baseObservable.filter(m => m.type === 'refresh');
   const processImageStream = baseObservable.filter(m => m.type === 'process-img');
   const togglePreviewStream = baseObservable.filter(m => m.type === 'toggle-preview');
   const debugStream = baseObservable.filter(m => m.type === 'debug');
 
-  debugStream.subscribe((d) => console.log(d.type));
+  debugStream.subscribe((d) => console.log(d));
 
   refreshStream.subscribe(e => {
     if (previewWindow) {
-      previewSendIpcMessage(e.type, ...e.data);
+      sendPreviewIpcMsg(e.type, ...e.data);
     }
+    /*if (mainWindow) {
+      sendMatrixIpcMsg(e.type, ...e.data);
+    }*/
   });
 
   processImageStream.subscribe(e => {
@@ -63,7 +68,7 @@ const setupWorker = () => {
     },
     cwd: path.resolve(__dirname, 'background')
   });
-  img_proc_worker.on('message', console.log);
+  img_proc_worker.on('message', e => console.log(e.type));
   img_proc_worker.on('close', console.log);
   img_proc_worker.on('disconnect', console.log);
   img_proc_worker.on('error', console.log);
@@ -77,8 +82,9 @@ const createWindow = async () => {
     webPreferences: {
       experimentalFeatures: true
     },
-    backgroundColor: '#2e2c2d'
+    backgroundColor: '#2e2c2d',
   });
+  //mainWindow.setMenu(null);
 
   previewWindow = new BrowserWindow({
     width: 320,
@@ -89,7 +95,8 @@ const createWindow = async () => {
     frame: false,
     title: 'Preview',
     movable: true,
-    show: false
+    show: false,
+    alwaysOnTop: true
   });
 
   modelWindow = new BrowserWindow({

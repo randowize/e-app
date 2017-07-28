@@ -60,28 +60,32 @@ const Container  = styled.div `
     background: rgba(124, 255, 255, 1);
      background: white;
     grid-template-columns: 1fr;
-    grid-template-rows: 3fr 3fr 2fr;
+    grid-template-rows: 1fr 1fr 1fr;
     &>div{
       display: grid;
       &:nth-child(1){
-        grid-template-columns: 1fr;
+        grid-template-columns: 2fr 1fr;
         grid-gap: 20px;
-        height:100%;
+        height:200px;
+        overflow-y: hidden;
+        padding: 20px;
         &>div{
-          background:rgba(0, 12, 15,0.85);
+          background:rgba(0, 12, 15,0.00);
           display:grid;
         }
       }
       &:nth-child(2){
-        grid-template-columns: 1fr 3fr 0.5fr;
+        grid-template-columns: 1fr 1fr ;
         grid-gap: 50px;
         div{
-          background: rgba(24, 25, 125, 1);
+          background: white;
+          color: black;
         }
       }
       &:nth-child(3){
-        grid-template-columns: 2fr 6fr 4fr;
+        grid-template-columns: 4fr 1fr 1fr 1fr;
         /*visibility: hidden;*/
+        align-items: flex-end;
         grid-gap: 30px;
         textarea{
           height:80%;

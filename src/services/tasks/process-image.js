@@ -5,6 +5,7 @@ const Jimp = require("jimp");
 const led_matrix_1 = require("../utils/led-matrix");
 const Canvas = require("canvas");
 const matrix_1 = require("./matrix");
+const utils_1 = require("./utils");
 const Image = Canvas.Image;
 exports.processImgBuffer = payload => new Promise((res, rej) => {
     const nb64Img = payload.data.replace('data:image/png;base64,', '');
@@ -33,20 +34,26 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         const { width, height, data } = clone.bitmap;
         const { data: odata } = oimg.clone().bitmap;
         const pixels = [];
+        const pixelsArray = [];
         const opixels = [];
         clone.scan(0, 0, width, height, (x, y, idx) => {
-            pixels.push({
+            if (pixelsArray[x] === undefined) {
+                pixelsArray[x] = [];
+            }
+            const pix = {
                 r: data[idx],
                 g: data[idx + 1],
                 b: data[idx + 2],
                 a: data[idx + 3]
-            });
+            };
+            pixels.push(pix);
             opixels.push({
                 r: odata[idx],
                 g: odata[idx + 1],
                 b: odata[idx + 2],
                 a: odata[idx + 3]
             });
+            pixelsArray[x].push(pix);
         });
         const black = { r: 0, g: 0, b: 0, a: 1 };
         const matrix = pixels.map(mapPixel).map(on => ({ on, color: on ? payload.color : black }));
@@ -58,8 +65,9 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         }).filter(o => o !== null);
         ledM.setData(matrix.slice());
         ledM.render();
+        utils_1.dbgMessage(pixelsArray);
         const url = ledM.toDataURL();
-        let mtcp = yield matrix_1.getMatrixFromPixelsArray(pixels.slice(0), img.bitmap.width, img.bitmap.height);
+        let mtcp = yield matrix_1.getMatrixFromPixelsArray(pixelsArray.slice(0), img.bitmap.width, img.bitmap.height);
         const result = {
             width,
             height,

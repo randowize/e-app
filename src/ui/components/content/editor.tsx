@@ -7,15 +7,18 @@ import { selectProps } from '../../../utils/props-selector';
 import LedPanel from './led-panel';
 import FontSelector from './select-font';
 import TextEditor from './textEditor';
-import Incdecr from './indecr';
+import Logo from '../logo';
+//import Incdecr from "./indecr";
 import Layout from './layout';
 import ColorPicker from './color-picker';
-import { HText } from './hoc';
-import SendBox  from '../send-box';
+//import { HText } from './hoc';
 import CanvasRenderer from '../canvas-renderer';
 import * as client from '../../../services/client-tcp';
 import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
 // import { close } from '../../../tcp-client';
+import Form from '../form';
+import { baseObservable } from '../../../shared/streams/base-observable';
+import Parks from '../park';
 
 export type colsOrRows = 'cols' | 'rows';
 
@@ -39,9 +42,16 @@ class Playground extends React.Component<any, IState> {
   }
 
   componentDidMount() {
-    client.connect()
-    .then(console.log)
-    .catch(console.error);
+    client.connect().then(console.log).catch(console.error);
+    baseObservable
+      .filter(e => e.type === 'refresh')
+      .map(d => d.data[1])
+      .do(console.log)
+      .subscribe(mt =>
+        this.setState({
+          mt
+        })
+      );
   }
   render() {
     return (
@@ -67,15 +77,18 @@ class Playground extends React.Component<any, IState> {
           />
           <hr />
           <ColorPicker />
-          <SendBox val='0' label='v1'/>
-          <SendBox val='1' label='v2'/>
-          <SendBox val='2' label='v3'/>
-          <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <button onClick={() => client.reconnect()}>reconnect</button>
-          <button onClick={() => client.close()}>disconnect</button>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <button onClick={() => client.reconnect()}>reconnect</button>
+            <button onClick={() => client.close()}>disconnect</button>
           </div>
         </div>
         <div className='content'>
+
+          <div>
+            <TextEditor color={this.props.color}/>
+            <Parks parks={this.props.parks} handlePark={this.props.handlePark}/>
+              
+          </div>
           <div className='3d-wrapper'>
             {/*<div className='led-panel-viewer'>
               <LedPanel
@@ -85,7 +98,7 @@ class Playground extends React.Component<any, IState> {
                 changes={this.props.changes}
               />
             </div>*/}
-            
+            <Logo src='' />
             <CanvasRenderer
               text={this.props.text}
               processData={this.props.processData}
@@ -97,59 +110,33 @@ class Playground extends React.Component<any, IState> {
               sendIpcMessage={this.props.sendIpcMessage}
             />
           </div>
-                    <div>
-            <div> 
-                <button onClick={() => {this.props.sendIpcMessage('toggle-preview'); }}>
-                  Toggle Preview 
-                 </button>
-            </div>
-            <TextEditor />
-            <div>
-              <HText
-                {...{
-                  'colCount': this.props.colScale,
-                  'rowCount': this.props.rowScale,
-                   'xm': this.props.xm,
-                   'ym': this.props.ym,
-                   'showMatrices': this.props.getMatrices,
-                  'debug': this.props.getPanelsAtRow,
-                  'test': this.props.getMatrices
-                }}
-              />
-            </div>
-          </div>
           <div>
-            <div>
-              <Incdecr label='Margin' ok action={this.marginModifier} />
-            </div>
-            <div className='panel-detail'>
-                  {this.props.onePanel.map((d, i) => (
-                    <LedPanel
-                        key={i}
-                        x={8}
-                        y={16}
-                        data={d}
-                  />))}
-                  {/*<LedPanel
-                        x={8}
-                        y={16}
-                        data={this.props.dataP}
-                  />*/}
-            </div>
-            <div>
-              <Incdecr label='Pixel Size' action={this.pixelSizeModifier} />
-            </div>
+            <Form update={this.props.addPark}/>
+            <button
+                onClick={() => {
+                  this.props.sendIpcMessage('toggle-preview');
+                }}
+              >
+              Ön  İzle
+            </button>
+            <button
+                onClick={() => {
+                  client.sendMatrix(this.state.mt);
+                }}
+            >
+               Sunucuya Gönder
+            </button>
           </div>
-
         </div>
-      </Layout >
+      </Layout>
     );
   }
 }
 const props = [
-    'onePanel',
-    'xm',
-    'ym',
+  'addPark',
+  'onePanel',
+  'xm',
+  'ym',
   'color',
   'colorRGBA',
   'rowScale',
@@ -169,8 +156,10 @@ const props = [
   'getMatrices',
   'text',
   'changes',
-   {activeFont: 'font'},
-  {processDataFromCanvas: 'processData'}
+  'parks',
+  'handlePark',
+  { activeFont: 'font' },
+  { processDataFromCanvas: 'processData' }
 ];
 
 const injectors = [

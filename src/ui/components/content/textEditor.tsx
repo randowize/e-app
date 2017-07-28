@@ -1,17 +1,20 @@
 import * as React from 'react';
 import { selectProps } from '../../../utils/props-selector';
-// import styled from 'styled-components';
-import registerListener from '../../../shared/streams/text-change';
+import styled from 'styled-components';
+import registerListener from '../../../shared/streams/process-text';
+//import RTE from '../rich-text-editor/rdwysiwyg';
 
 export interface TextEditorProps {
   [key: string]: any;
 }
-/*
-const Container = styled.textarea `
+
+const Container : any = styled.textarea `
   background: #000;
-  color:${(props: any) => props.style.color}
+  height: 75%;
+  width : 75%;
+  color:${(props: any) => props.color}
 `;
-*/
+
 class TextEditor extends React.Component<TextEditorProps, any> {
   node: HTMLTextAreaElement |null ;
   componentDidMount() {
@@ -24,10 +27,11 @@ class TextEditor extends React.Component<TextEditorProps, any> {
   }
   render() {
   return (
-    <textarea
-      style={{background: '#000', color: this.props.color}}
-      ref={node => this.node = node}
+    <Container
+      color={this.props.color}
+      innerRef={node => this.node = node}
     />
+    /*<RTE  onChange={console.log}/>*/
   );
 }
 }

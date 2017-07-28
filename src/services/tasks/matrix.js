@@ -2,16 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const Jimp = require("jimp");
-const utils_1 = require("./utils");
-function to2DArray(dim1, dim2) {
+function to2DArray(rows, cols) {
     return function (arr) {
         let res = [];
-        for (let i = 0; i < dim1; i++) {
+        for (let i = 0; i < rows; i++) {
             if (res[i] === undefined) {
                 res[i] = [];
             }
-            for (let j = 0; j < dim2; j++) {
-                res[i][j] = arr[i * dim2 + j];
+            for (let j = 0; j < cols; j++) {
+                res[i][j] = arr[i * cols + j];
             }
         }
         ;
@@ -78,12 +77,17 @@ function getMatrixTest(img) {
         function buildLines(arr1, arr2) {
             return arr1.map((a, i) => [...a, ...arr2[i]].join(','));
         }
+        const prefix = 'volatile unsigned char Panel_';
         applyToArray(dizi1, 0, 0);
         applyToArray(dizi2, 32, 0);
         applyToArray(dizi3, 0, 16);
         applyToArray(dizi4, 32, 16);
         const mat = [buildLines(dizi2, dizi1), buildLines(dizi4, dizi3)];
-        return mat.join(',');
+        return mat.map((varr, idx) => {
+            return varr.map((v, idx1) => {
+                return `${prefix}${mat.length - idx}${varr.length - idx1}={${v}}`;
+            });
+        });
     });
 }
 exports.getMatrixTest = getMatrixTest;
@@ -93,8 +97,7 @@ function getMatrixFromPixelsArray(pixels, w, h) {
         let dizi2 = [];
         let dizi3 = [];
         let dizi4 = [];
-        const pix2d = to2DArray(w, h)(pixels);
-        utils_1.dbgMessage('pix2d created');
+        console.log(pixels.length, pixels[0].length);
         function applyToArray(carr, dx = 0, dy = 0) {
             let pixel_x, pixel_y, pixel;
             let X, Y, sutun;
@@ -108,7 +111,7 @@ function getMatrixFromPixelsArray(pixels, w, h) {
                 for (sutun = 0; sutun < X; sutun++) {
                     pixel = 0;
                     for (pixel_x = 0; pixel_x < 8; pixel_x++) {
-                        pixelColor = pix2d[pixel_x + dx + sutun * 8][dy + pixel_y];
+                        pixelColor = pixels[pixel_x + dx + sutun * 8][dy + pixel_y];
                         if (pixelColor.r > 20 || pixelColor.g > 20 || pixelColor.b > 20) {
                             pixel = pixel + 0;
                         }
@@ -129,7 +132,6 @@ function getMatrixFromPixelsArray(pixels, w, h) {
                     blok += 1;
                 }
             }
-            utils_1.dbgMessage('for loop ok');
         }
         function buildLines(arr1, arr2) {
             return arr1.map((a, i) => [...a, ...arr2[i]].join(','));

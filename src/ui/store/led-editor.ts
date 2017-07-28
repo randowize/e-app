@@ -1,5 +1,12 @@
 import { observable, computed, action, reaction , toJS} from 'mobx';
 import {groupBy} from 'lodash';
+import * as path from 'path';
+import {remote} from 'electron';
+
+const {addRecord, getAllParks} = remote.require(path.resolve(__dirname, '../../api'));
+
+//import { ipcRenderer } from 'electron';
+
 import {
   extractPanel,
   initializeGrouping,
@@ -12,17 +19,23 @@ import webfonts from '../fonts/web-fonts';
 import { LedDrawerManager } from '../../utils/led-matrix/led/store';
 import { selectImage } from '../../utils/electron';
 import { getRGBA } from '../../utils/led-matrix/led/color';
+//import { ipcMessageSenderFactory } from '../../shared/streams/rx-ipc';
+import { processText } from '../../shared/streams/base-observable';
+
+//let sendIpcMessage = ipcMessageSenderFactory(ipcRenderer);
 
 // let satir_1 = [12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3];
 
 class LedStore {
   //body
   lines = [
-    '😈⛱🚀ℹ',
-    '😃🙌🌈™©'
+    'Dolu:',
+    /*'😈⛱🚀ℹ',*/
+    /*'😃🙌🌈™©',*/
+    'Boş:'
   ];
   @observable text: string = this.lines.join('\n');
-  @observable activeFont: string = 'Monospace';
+  @observable activeFont: string = 'Courier New';
   @observable rowScale: number = 2; // should be 4;
   @observable colScale: number = 2; // should be 5
   @observable color: string = '#0feffe';
@@ -36,6 +49,7 @@ class LedStore {
   @observable matrix: any[] = [];
   @observable matrixP: any[] = [];
   @observable changed: any[] = [];
+  @observable parks: any = [];
 
   private drawerManager: LedDrawerManager;
 
@@ -44,6 +58,7 @@ class LedStore {
     this.paint();
     this.matrix = this.drawerManager.matrix;
     reaction(this.selectFields, this.repaint, { context: this });
+    this.getParks().then(this.updateParks);
   }
 
   private selectFields = () => ({
@@ -146,6 +161,41 @@ class LedStore {
     this.changed = d.changed.map(o => ({
         ...o,
         color: getRGBA(this.color)
+    }));
+  }
+
+  @action addPark = async (park) => {
+    try {
+      const bos = park.bos | ((park.kapasite * Math.random () ) >> 0);
+      let res = await addRecord({...park, bos});
+      console.log(res);
+      let parks = await this.getParks();
+      this.updateParks(parks);
+    }catch (e) {
+      console.log(e);
+    }
+  }
+  @action handlePark = async (id) => {
+    const park = this.parks.filter(p => id === p.id)[0];
+    this.text = `${this.lines[0]}${park.kapasite - park.bos}\n${this.lines[1]}${park.bos}`;
+    processText(this.text);
+  }
+  @action updateParkByID = async (park) => {
+    try {
+    }catch (e) {
+      console.log(e);
+    }
+  }
+  @action getParks = async  () => {
+    let parks = await getAllParks();
+    return parks;
+  }
+  @action updateParks = (parks)  => {
+    this.parks = parks.map(p => ({
+      id: p._id,
+      konum: p.konum,
+      kapasite: p.kapasite,
+      bos: p.bos
     }));
   }
   @computed

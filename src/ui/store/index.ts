@@ -1,7 +1,7 @@
 //import {observable, computed, action} from 'mobx';
 //import * as Rx from 'rxjs';
 //import {delay} from '../../utils/timers';
-import { refreshStream } from '../../shared/streams/text-change';
+import { refreshStream } from '../../shared/streams/process-text';
 import { ipcMessageSenderFactory } from '../../shared/streams/rx-ipc';
 import {ipcRenderer} from 'electron';
 

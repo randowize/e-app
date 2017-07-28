@@ -1,6 +1,9 @@
+// tslint:disable-next-line:no-unused-variable
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
+
+const mod: any = module;
 function render() {
   const { App } = require('./app');
   ReactDOM.render(
@@ -10,7 +13,8 @@ function render() {
     document.getElementById('App')
   );
 }
+
 render();
-if (module.hot) {
-  module.hot.accept(render);
+if (mod.hot) {
+  mod.hot.accept(render);
 }

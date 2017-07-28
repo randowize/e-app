@@ -6,7 +6,7 @@ import {
   textStream,
   nextTextEvent,
   refreshPreview
-} from '../../../shared/streams/text-change';
+} from '../../../shared/streams/process-text';
 //import {ipcRenderer} from 'electron';
 
 export interface IProps {
@@ -42,7 +42,7 @@ class Container extends React.Component<IProps, any> {
       .do( p => this.props.sendIpcMessage('process-img', p))
       //.do(p => ipcRenderer.send('process-img', p))
       .switchMap(payload => Tasks.processImgBuffer(payload))
-      .subscribe((d: any) => refreshPreview(d.url));
+      .subscribe((d: any) => refreshPreview(d.url, d.mtcp));
     webfont.load({
       google: {
         families: ['Droid Sans', 'Droid Serif', 'Bungee Shade']
@@ -84,7 +84,7 @@ class Container extends React.Component<IProps, any> {
       //ctx.fillRect(0, 0, 100, 100);
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       console.log(this.state.font);
-      let font  = `normal 90px ${this.state.font}`;
+      let font  = `normal 70px ${this.state.font}`;
       ctx.font = font;
       const lineHeight = ctx.measureText('M').width;
       ctx.fillStyle = 'white';
@@ -120,7 +120,7 @@ class Container extends React.Component<IProps, any> {
         <CanvasRenderer
           getRef={this.getRef}
           width={300}
-          style={{ background: 'rgba(125,15,125,0.75)', display: 'inherit' }}
+          style={{ background: 'rgba(6,6,6,1)', display: 'inherit' }}
         />
         <img
           src={this.state.src}
