@@ -2,10 +2,22 @@
 
 exports[`renders correctly 1`] = `
 <ul
-  className="enXgyU"
+  className="sc-bdVaJa iVqtFN"
 >
   <li
-    className="cThqVQ"
+    className="sc-bwzfXH dILcNu"
+  >
+    <img
+      src="E:\\\\fsd\\\\electron-app\\\\src\\\\ui\\\\components\\\\menu\\\\logo-1.png"
+      style={
+        Object {
+          "borderRadius": "50%",
+        }
+      }
+    />
+  </li>
+  <li
+    className="sc-bwzfXH dILcNu"
     onClick={[Function]}
   >
     <span
