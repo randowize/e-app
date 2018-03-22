@@ -1,0 +1,29 @@
+class {
+  onCreate(){
+    this.state = {
+      count:0
+    };
+  }
+  increment(){
+    console.log('increment');
+    this.state.count++;
+  }
+  decrement(){
+    console.log('decrement');
+    this.state.count--;
+  }
+}
+
+style{
+  .marko-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+  }
+}
+
+<div.marko-container>
+  <button on-click('increment')>increment</button>
+  <button on-click('decrement')>decrement</button>
+  <span>${state.count}</span>
+</div>

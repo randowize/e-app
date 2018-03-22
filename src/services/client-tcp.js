@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const net = require("net");
 let client = new net.Socket();
-let PORT = process.env.TCP_PORT || 9000;
-let HOST = process.env.HOST_IP || process.env.HOST_NAME || '127.0.0.1';
-function connect() {
+let PORT = process.env.TCP_PORT || 11111;
+let HOST = '127.0.0.1' || process.env.HOST_IP || process.env.HOST_NAME;
+function connect () {
     return new Promise((res, rej) => {
         client.connect(PORT, HOST, function (err) {
             if (err)
@@ -20,30 +20,30 @@ client.on('data', function (data) {
 client.on('close', function () {
     console.log('Connection closed');
 });
-function sendMatrix(data) {
+function sendMatrix (data) {
     return client.destroyed
         ? false
         : client.write(data);
 }
 exports.sendMatrix = sendMatrix;
-function sendValue(data) {
+function sendValue (data) {
     return client.destroyed
         ? false
         : client.write('put:' + data);
 }
 exports.sendValue = sendValue;
-function close() {
+function close () {
     if (!client.destroyed) {
         client.write('close');
     }
 }
 exports.close = close;
-function reconnect() {
+function reconnect () {
     return client.destroyed ? client
         .connect(PORT, HOST, function () {
-        console.log('Reconnected');
-    })
+            console.log('Reconnected');
+        })
         :
-            null;
+        null;
 }
 exports.reconnect = reconnect;

@@ -30,13 +30,13 @@ class LedStore {
   //body
   lines = [
     'Dolu:',
-    /*'😈⛱🚀ℹ',*/
-    /*'😃🙌🌈™©',*/
+    /*'😈⛱ℹ',*/
+    /*'😃🚀🙌🌈™©',*/
     'Boş:'
   ];
   @observable text: string = this.lines.join('\n');
   @observable activeFont: string = 'Courier New';
-  @observable rowScale: number = 2; // should be 4;
+  @observable rowScale: number = 2 ; // should be 4;
   @observable colScale: number = 2; // should be 5
   @observable color: string = '#0feffe';
   @observable colorRGBA = {r: 0, g: 0, b: 0, a: 1};

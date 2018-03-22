@@ -8,13 +8,13 @@ import { enableLiveReload } from 'electron-compile';
 import * as cp from 'child_process';
 import * as path from 'path';
 import { baseObservable, EventName } from '../shared/streams/base-observable';
-import {ipcMessageSenderFactory } from '../shared/streams/rx-ipc';
+import { ipcMessageSenderFactory } from '../shared/streams/rx-ipc';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
 let previewWindow: Electron.BrowserWindow | null = null;
-let modelWindow: Electron.BrowserWindow | null = null;
+//let modelWindow: Electron.BrowserWindow | null = null;
 let sendPreviewIpcMsg: (evtName: EventName, ...data) => void;
 let sendMatrixIpcMsg: (evtName: EventName, ...data) => void;
 const isDevMode = process.execPath.match(/[\\/]electron/);
@@ -26,36 +26,36 @@ const setupIpcCom = () => {
   // configureIpcMessage(ipcMain);
   if (previewWindow && mainWindow) {
 
-  sendPreviewIpcMsg = ipcMessageSenderFactory(previewWindow.webContents);
-  sendMatrixIpcMsg = ipcMessageSenderFactory(mainWindow.webContents);
-  const refreshStream = baseObservable.filter(m => m.type === 'refresh');
-  const processImageStream = baseObservable.filter(m => m.type === 'process-img');
-  const togglePreviewStream = baseObservable.filter(m => m.type === 'toggle-preview');
-  const debugStream = baseObservable.filter(m => m.type === 'debug');
+    sendPreviewIpcMsg = ipcMessageSenderFactory(previewWindow.webContents);
+    sendMatrixIpcMsg = ipcMessageSenderFactory(mainWindow.webContents);
+    const refreshStream = baseObservable.filter(m => m.type === 'refresh');
+    const processImageStream = baseObservable.filter(m => m.type === 'process-img');
+    const togglePreviewStream = baseObservable.filter(m => m.type === 'toggle-preview');
+    const debugStream = baseObservable.filter(m => m.type === 'debug');
 
-  debugStream.subscribe((d) => console.log(d));
+    debugStream.subscribe((d) => console.log(d));
 
-  refreshStream.subscribe(e => {
-    if (previewWindow) {
-      sendPreviewIpcMsg(e.type, ...e.data);
-    }
-    /*if (mainWindow) {
-      sendMatrixIpcMsg(e.type, ...e.data);
-    }*/
-  });
+    refreshStream.subscribe(e => {
+      if (previewWindow) {
+        sendPreviewIpcMsg(e.type, ...e.data);
+      }
+      /*if (mainWindow) {
+        sendMatrixIpcMsg(e.type, ...e.data);
+      }*/
+    });
 
-  processImageStream.subscribe(e => {
-    if (img_proc_worker.connected) {
-      img_proc_worker.send({ type: 'process-img', payload: e.data[0] });
-    }
-  });
+    processImageStream.subscribe(e => {
+      if (img_proc_worker.connected) {
+        img_proc_worker.send({ type: 'process-img', payload: e.data[0] });
+      }
+    });
 
-  togglePreviewStream.subscribe(e => {
-    if (previewWindow) {
-      if (previewWindow.isVisible()) return previewWindow.hide();
-      return previewWindow.show();
-    }
-  });
+    togglePreviewStream.subscribe(e => {
+      if (previewWindow) {
+        if (previewWindow.isVisible()) return previewWindow.hide();
+        return previewWindow.show();
+      }
+    });
 
   }
 };
@@ -84,7 +84,7 @@ const createWindow = async () => {
     },
     backgroundColor: '#2e2c2d',
   });
-  //mainWindow.setMenu(null);
+  // mainWindow.setMenu(null);
 
   previewWindow = new BrowserWindow({
     width: 320,
@@ -99,7 +99,7 @@ const createWindow = async () => {
     alwaysOnTop: true
   });
 
-  modelWindow = new BrowserWindow({
+  /*modelWindow = new BrowserWindow({
     width: 320,
     height: 240,
     webPreferences: {
@@ -109,12 +109,12 @@ const createWindow = async () => {
     title: 'Model',
     movable: true,
     show: true
-  });
+  });*/
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/../screens/index.html`);
   previewWindow.loadURL(`file://${__dirname}/../screens/preview.html`);
-  modelWindow.loadURL(`file://${__dirname}/../screens/prototyping.html`);
+  //modelWindow.loadURL(`file://${__dirname}/../screens/prototyping.html`);
 
   // Open the DevTools.
   if (isDevMode) {
@@ -134,8 +134,8 @@ const createWindow = async () => {
     // when you should delete the corresponding element.
     mainWindow = null;
     if (previewWindow) previewWindow.close();
-    if (modelWindow) modelWindow.close();
-    modelWindow = null;
+    // if (modelWindow) modelWindow.close();
+    // modelWindow = null;
     previewWindow = null;
   });
 
