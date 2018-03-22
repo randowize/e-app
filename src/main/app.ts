@@ -25,15 +25,18 @@ let img_proc_worker: cp.ChildProcess;
 const setupIpcCom = () => {
   // configureIpcMessage(ipcMain);
   if (previewWindow && mainWindow) {
-
     sendPreviewIpcMsg = ipcMessageSenderFactory(previewWindow.webContents);
     sendMatrixIpcMsg = ipcMessageSenderFactory(mainWindow.webContents);
     const refreshStream = baseObservable.filter(m => m.type === 'refresh');
-    const processImageStream = baseObservable.filter(m => m.type === 'process-img');
-    const togglePreviewStream = baseObservable.filter(m => m.type === 'toggle-preview');
+    const processImageStream = baseObservable.filter(
+      m => m.type === 'process-img'
+    );
+    const togglePreviewStream = baseObservable.filter(
+      m => m.type === 'toggle-preview'
+    );
     const debugStream = baseObservable.filter(m => m.type === 'debug');
 
-    debugStream.subscribe((d) => console.log(d));
+    debugStream.subscribe(d => console.log(d));
 
     refreshStream.subscribe(e => {
       if (previewWindow) {
@@ -56,7 +59,6 @@ const setupIpcCom = () => {
         return previewWindow.show();
       }
     });
-
   }
 };
 
@@ -80,9 +82,10 @@ const createWindow = async () => {
     width: 800,
     height: 600,
     webPreferences: {
-      experimentalFeatures: true
+      experimentalFeatures: true,
+      experimentalCanvasFeatures: true
     },
-    backgroundColor: '#2e2c2d',
+    backgroundColor: '#2e2c2d'
   });
   // mainWindow.setMenu(null);
 
