@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CanvasRenderer } from './canvas-renderer';
+//import { CanvasRenderer } from './canvas-renderer';
 import * as webfont from 'webfontloader';
 import Tasks from '../../../services/tasks';
 import {
@@ -27,10 +27,6 @@ class Container extends React.Component<IProps, any> {
   constructor(props) {
     super(props);
     // refreshStream.take(1).subscribe(this.draw);
-
-  }
-  getRef = (ref: HTMLCanvasElement) => {
-    this.canvas = ref;
   }
 
   componentDidMount() {
@@ -39,8 +35,7 @@ class Container extends React.Component<IProps, any> {
       .map(o => o.text)
       .map(this.extractPayload)
       .debounceTime(1000)
-      .do( p => this.props.sendIpcMessage('process-img', p))
-      //.do(p => ipcRenderer.send('process-img', p))
+      .do(p => this.props.sendIpcMessage('process-img', p))
       .switchMap(payload => Tasks.processImgBuffer(payload))
       .subscribe((d: any) => refreshPreview(d.url, d.mtcp));
     webfont.load({
@@ -48,7 +43,6 @@ class Container extends React.Component<IProps, any> {
         families: ['Droid Sans', 'Droid Serif', 'Bungee Shade']
       },
       loading() {
-
         console.log('loaded');
       }
     });
@@ -57,7 +51,6 @@ class Container extends React.Component<IProps, any> {
   componentWillReceiveProps(nextProps) {
     let props = ['text', 'font'];
     const cond = this.shouldCanvasUpdate(nextProps, props);
-    console.log(cond);
     if (cond.update) {
       this.setState(cond.state, () => {
         this.extractPayload(nextProps.text);
@@ -83,19 +76,26 @@ class Container extends React.Component<IProps, any> {
     if (ctx) {
       //ctx.fillRect(0, 0, 100, 100);
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      console.log(this.state.font);
-      let font  = `normal 70px ${this.state.font}`;
+      let font = `normal 100px ${this.state.font}`;
       ctx.font = font;
-      const lineHeight = ctx.measureText('M').width;
+      //const lineHeight = ctx.measureText('M').width;
       ctx.fillStyle = 'white';
       ctx.strokeStyle = 'green';
       // const text = this.state.text;
       const text = textv;
-      text.split(/\n/).forEach((chunk, i) => {
+      /*text.split(/\n/).forEach((chunk, i) => {
         const dy = i ? 40 : 20;
         ctx.fillText(chunk, 0, lineHeight * (i + 1) + dy);
         ctx.strokeText(chunk, 0, lineHeight * (i + 1) + dy);
-      });
+      });*/
+      this.wrapText({
+        ctx,
+        text,
+        maxWidth: 0.8 * this.canvas.width,
+        y: 15,
+        x: 20,
+        lineHeight: 20
+      })
       const ndata = this.canvas.toDataURL();
       this.setState({
         src: ndata
@@ -117,8 +117,8 @@ class Container extends React.Component<IProps, any> {
   render() {
     return (
       <div style={{ gridTemplateColumns: '1fr', gridGap: '20px' }}>
-        <CanvasRenderer
-          getRef={this.getRef}
+        <canvas
+          ref={(node: HTMLCanvasElement) => { this.canvas = node; }}
           width={300}
           style={{ background: 'rgba(6,6,6,1)', display: 'inherit' }}
         />
@@ -127,7 +127,7 @@ class Container extends React.Component<IProps, any> {
           alt='canvas generated'
           height={`${this.props.height}px`}
           width={`${this.props.width}px`}
-          style={{ height: '100%', width: '100%', display: 'none'}}
+          style={{ height: '100%', width: '100%', display: 'none' }}
         />
         <canvas
           ref={node => (this.cnvrenderer = node)}
@@ -143,6 +143,29 @@ class Container extends React.Component<IProps, any> {
       </div>
     );
   }
+  wrapText({ ctx, text, maxWidth, x, y, lineHeight }) {
+    let words = text.split(' ');
+    let line = '';
+    let testLine;
+    let metrics;
+    let testWidth;
+
+    for (let n = 0; n < words.length; n++) {
+      testLine = line + words[n] + ' ';
+      metrics = ctx.measureText(testLine);
+      testWidth = metrics.width;
+      console.log(testWidth);
+      if (testWidth > maxWidth && n > 0) {
+        ctx.fillText(line, x, y);
+        line = words[n] + ' ';
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, y);
+  }
+
 }
 
 export default Container;

@@ -2,8 +2,8 @@ import * as React from 'react';
 
 export const withState = (state: string, handler: string, v: any) => W => {
   return class extends React.Component<any, any> {
-    constructor() {
-      super();
+    constructor(props) {
+      super(props);
       //this[handler] = this.addHandler(handler, state);
       this[handler] = this[handler].bind(this);
     }

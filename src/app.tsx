@@ -8,7 +8,6 @@ import Store from './ui/store';
 import { addRxStreamCapabilityToIpcModule } from './shared/streams/rx-ipc';
 addRxStreamCapabilityToIpcModule(ipcRenderer);*/
 
-
 export class App extends React.Component<undefined, undefined> {
   render() {
     return (

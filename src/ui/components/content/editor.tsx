@@ -1,13 +1,11 @@
 import * as React from 'react';
 import * as ucompose from 'ucompose';
-import Slider from 'react-rangeslider';
-
 import { selectProps } from '../../../utils/props-selector';
 
-import LedPanel from './led-panel';
+//import LedPanel from './led-panel';
 import FontSelector from './select-font';
 import TextEditor from './textEditor';
-import Logo from '../logo';
+// import Logo from '../logo';
 //import Incdecr from "./indecr";
 import Layout from './layout';
 import ColorPicker from './color-picker';
@@ -19,6 +17,7 @@ import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
 import Form from '../form';
 import { baseObservable } from '../../../shared/streams/base-observable';
 import Parks from '../park';
+import DomToCanvas from '../dom-to-img/dom-to-img';
 
 export type colsOrRows = 'cols' | 'rows';
 
@@ -36,17 +35,19 @@ class Playground extends React.Component<any, IState> {
   pixelSizeModifier: any;
   marginModifier: any;
   constructor(props) {
-    super();
+    super(props);
     this.pixelSizeModifier = props.propModifier('pixelSize');
     this.marginModifier = props.propModifier('margin');
   }
 
   componentDidMount() {
-    client.connect().then(console.log).catch(console.error);
+    client
+      .connect()
+      .then(console.log)
+      .catch(console.error);
     baseObservable
       .filter(e => e.type === 'refresh')
       .map(d => d.data[1])
-      .do(console.log)
       .subscribe(mt =>
         this.setState({
           mt
@@ -56,10 +57,10 @@ class Playground extends React.Component<any, IState> {
   render() {
     return (
       <Layout className={this.props.menuType}>
-        <div className='options'>
+        <div className="options">
           <FontSelector />
           <hr />
-          <Slider
+          {/* <Slider
             min={1}
             step={1}
             max={5}
@@ -74,32 +75,34 @@ class Playground extends React.Component<any, IState> {
             tooltip={false}
             onChange={this.props.setRowScale}
             value={this.props.rowScale}
-          />
-          <hr />
-          <ColorPicker />
+            <hr />
+            <ColorPicker />
+          />*/}
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <button onClick={() => client.reconnect()}>reconnect</button>
             <button onClick={() => client.close()}>disconnect</button>
           </div>
         </div>
-        <div className='content'>
-
+        <div className="content">
+          {/*
           <div>
-            <TextEditor color={this.props.color}/>
-            <Parks parks={this.props.parks} handlePark={this.props.handlePark}/>
-              
+            <TextEditor color={this.props.color} />
+            <Parks
+              parks={this.props.parks}
+              handlePark={this.props.handlePark}
+            />
           </div>
-          <div className='3d-wrapper'>
-            {/*<div className='led-panel-viewer'>
+            <div className='3d-wrapper'>
+            <div className='led-panel-viewer'>
               <LedPanel
                 x={this.props.cols}
                 y={this.props.rows}
                 data={this.props.data}
                 changes={this.props.changes}
               />
-            </div>*/}
-            <Logo src='' />
-            <CanvasRenderer
+              <Logo src='' />
+              </div>
+              <CanvasRenderer
               text={this.props.text}
               processData={this.props.processData}
               width={this.props.cols}
@@ -108,23 +111,25 @@ class Playground extends React.Component<any, IState> {
               color={this.props.colorRGBA}
               matrix={this.props.data}
               sendIpcMessage={this.props.sendIpcMessage}
-            />
-          </div>
+              />
+            </div>*/}
+          <DomToCanvas />
           <div>
-            <Form update={this.props.addPark}/>
+            <Form update={this.props.addPark} />
+            <span />
             <button
-                onClick={() => {
-                  this.props.sendIpcMessage('toggle-preview');
-                }}
-              >
-              Ön  İzle
+              onClick={() => {
+                this.props.sendIpcMessage('toggle-preview');
+              }}
+            >
+              Ön İzle
             </button>
             <button
-                onClick={() => {
-                  client.sendMatrix(this.state.mt);
-                }}
+              onClick={() => {
+                client.sendMatrix(this.state.mt);
+              }}
             >
-               Sunucuya Gönder
+              Sunucuya Gönder
             </button>
           </div>
         </div>
@@ -168,3 +173,17 @@ const injectors = [
   selectProps('ledStore')(...props)
 ];
 export default ucompose(injectors)(Playground);
+
+const a = 'lamine';
+
+const obj = {
+  $data: {},
+  get [a]() {
+    return this.$data[a];
+  },
+  set [a](v: string) {
+    this.$data[a] = v.length < 5 ? v : v.slice(0, 5) + '...';
+  }
+};
+obj.lamine = 'this is cool';
+console.log(obj);

@@ -1,16 +1,16 @@
 import * as net from 'net';
 
-let client = new net.Socket();
-let PORT = process.env.TCP_PORT || 9000;
-let HOST = process.env.HOST_IP || process.env.HOST_NAME || '127.0.0.1';
+const client = new net.Socket();
+const PORT = process.env.TCP_PORT || 11111;
+const HOST = '127.0.0.1' || process.env.HOST_IP || process.env.HOST_NAME;
 
 export function connect() {
- return new Promise((res, rej) => {
-    client.connect(PORT, HOST, function (err) {
-     if (err) return rej(err);
-     return res('connection established');
-  });
- });
+    return new Promise((res, rej) => {
+        client.connect(PORT, HOST, function (err) {
+            if (err) return rej(err);
+            return res('connection established');
+        });
+    });
 
 }
 client.on('data', function (data) {
@@ -36,13 +36,13 @@ export function sendValue(data: any) {
 
 }
 export function close() {
-  if (!client.destroyed) {
-       client.write('close');
-  }
+    if (!client.destroyed) {
+        client.write('close');
+    }
 }
 
 export function reconnect() {
-   return client.destroyed ? client
+    return client.destroyed ? client
         .connect(PORT, HOST, function () {
             console.log('Reconnected');
         })

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as path from 'path';
+import Marko from '../marko';
 
 const logoUrl = path.resolve(__dirname, '../menu/logo-1.png');
 export interface AppProps {
@@ -8,12 +9,13 @@ export interface AppProps {
 
 class App extends React.Component<AppProps, any> {
   render() {
-    return (
-      <div>
-        <img src={this.props.src  || logoUrl} />
-      </div>
-    );
+    return (  <Marko />);
   }
 }
 
 export default App;
+
+{ /*<div>
+  <img src={this.props.src  || logoUrl} />
+</div> */
+}
