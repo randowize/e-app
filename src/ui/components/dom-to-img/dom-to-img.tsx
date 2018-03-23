@@ -5,8 +5,6 @@ import * as domimg from 'dom-to-image';
 const Div = styled.div`
   border: solid 2px red;
   display: block !important;
-  width: 160px;
-  height: 160px;
   background: black;
 
   & img {
@@ -23,19 +21,10 @@ export default class DomToCanvas extends React.Component<
   DomToCanvasProps,
   any
 > {
-  ref;
-  componentDidMount() {
-    console.log(this.ref.transferControlToOffscreen);
-  }
   render() {
     return (
       <Div>
         <img src={this.props.src} alt="view dom" />
-        <canvas
-          ref={(node: HTMLCanvasElement) => {
-            this.ref = node;
-          }}
-        />
       </Div>
     );
   }

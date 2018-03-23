@@ -1,6 +1,10 @@
 import * as React from 'react';
 import * as ucompose from 'ucompose';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+import { EditorState } from 'draft-js';
+
+import { convertDomNodeToImage } from '../dom-to-img/dom-to-img';
 
 import { selectProps } from '../../../utils/props-selector';
 import Layout from './layout';
@@ -12,16 +16,47 @@ import { baseObservable } from '../../../shared/streams/base-observable';
 import DomToCanvas from '../dom-to-img/dom-to-img';
 import PanelContentEditor from '../panel-content-editor/rdwysiwyg';
 
+const loop_mixin = (times, fn) => {
+  const  result: any = [];
+  for (let i = 0; i < times; i++ ) {
+    result.push(...fn(i));
+  }
+  return result;
+};
+
 const Content = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 3fr 2fr;
+  grid-template-rows: 1fr 1fr;
+  padding: 10px;
+  grid-gap: 20px;
 `;
 
+const Footer: any = styled.div`
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-areas:
+    'form form from'
+    'button1 button2 button3';
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 4fr 1fr;
+  grid-gap: 10px;
+  align-items: flex-end;
+  ${(props: any) => loop_mixin(props.buttonCount, i => {
+    return css`
+     &>button:nth-of-type(${i + 1}){
+       grid-area:button${i + 1}
+     }
+   `;
+  })
+  };
+`;
 export type colsOrRows = 'cols' | 'rows';
 
 export interface IState {
   text?: string;
   src?: string;
+  editorState?: EditorState;
   [index: string]: any;
 }
 
@@ -38,8 +73,10 @@ class Playground extends React.Component<any, IState> {
     this.marginModifier = props.propModifier('margin');
   }
 
-  processImage = src => {
-    this.setState({ src });
+  editorRef;
+
+  getEditorReference = ref => {
+    this.editorRef = ref;
   };
 
   componentDidMount() {
@@ -56,6 +93,13 @@ class Playground extends React.Component<any, IState> {
         })
       );
   }
+  rasterizeEditorState = async () => {
+    const { editorRef } = this;
+    if (editorRef) {
+      const src = await convertDomNodeToImage(editorRef.editorContainer);
+      this.setState({ src });
+    }
+  };
   render() {
     return (
       <Layout className={this.props.menuType}>
@@ -66,11 +110,12 @@ class Playground extends React.Component<any, IState> {
           </div>
         </div>
         <Content>
-          <PanelContentEditor processImage={this.processImage} />
+          <PanelContentEditor
+            getInnerDraftEditorRef={this.getEditorReference}
+          />
           <DomToCanvas src={this.state.src} />
-          <div>
+          <Footer buttonCount={3}>
             <Form update={this.props.addPark} />
-            <span />
             <button
               onClick={() => {
                 this.props.sendIpcMessage('toggle-preview');
@@ -85,7 +130,8 @@ class Playground extends React.Component<any, IState> {
             >
               Sunucuya Gönder
             </button>
-          </div>
+            <button onClick={this.rasterizeEditorState}>Rasterize</button>
+          </Footer>
         </Content>
       </Layout>
     );
