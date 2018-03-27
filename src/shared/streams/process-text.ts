@@ -18,6 +18,9 @@ export const textStream = baseObservable
 
 export const nextTextEvent = (text: string) => ({ type: 'text-change', text }) as IEvent;
 
+export const editorStateChangeStream = baseObservable
+  .filter(o => o.type === 'editor-state-change');
+
 const valueStream = (node: TextArea) =>
   Rx.Observable
     .fromEvent(node, 'input')

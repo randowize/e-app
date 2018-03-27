@@ -3,10 +3,13 @@ import styled from 'styled-components';
 import * as domimg from 'dom-to-image';
 
 const Div = styled.div`
-  border: solid 2px red;
+  border: solid 5px red;
   display: block !important;
   background: black;
-
+  height: 160px;
+  width: 160px;
+  justify-self:center;
+  align-self: center;
   & img {
     width: 100%;
     height: 100%;
@@ -15,6 +18,7 @@ const Div = styled.div`
 
 export interface DomToCanvasProps {
   src?: string;
+  innerRef?: (node: HTMLImageElement) => void;
 }
 
 export default class DomToCanvas extends React.Component<
@@ -24,7 +28,7 @@ export default class DomToCanvas extends React.Component<
   render() {
     return (
       <Div>
-        <img src={this.props.src} alt="view dom" />
+        <img src={this.props.src} ref={this.props.innerRef}/>
       </Div>
     );
   }

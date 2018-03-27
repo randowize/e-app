@@ -23,7 +23,7 @@
         "lib": [
             "es2017",
             "dom",
-            "dom.iterable"
+            "dom.iterable",
         ]
     },
     "formatCodeOptions": {

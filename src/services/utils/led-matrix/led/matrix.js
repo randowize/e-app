@@ -13,6 +13,9 @@ class LedMatrix {
     constructor(canvas, opts = {}) {
         this.data = [];
         this.offset = 0;
+        this.black = 'rgba(0,0,0,1)';
+        this.white = 'rgba(255,255,255,1)';
+        this.red = 'rgba(255,0,0,1)';
         this.setup = () => {
             const x = this.opts.x || 32;
             const y = this.opts.y || 16;
@@ -29,8 +32,8 @@ class LedMatrix {
             let rgba = '';
             if (color) {
                 rgba = on
-                    ? `rgb(${color.r},${color.g},${color.b})`
-                    : 'rgba(0,0,0,0.1)';
+                    ? this.white
+                    : this.black;
             }
             return rgba;
         };

@@ -6,8 +6,8 @@ const Container  = styled.div `
   flex-grow:2;
   transition: all 0.5s ease;
   grid-template-columns: 1fr[options-end] 3fr[content-end];
-
-  .3d-wrapper{
+  height: calc(100vh - ${(props: any) => props.statusBarSize || 25}px);
+  & .d-wrapper{
     perspective: 400px;
     transform-style: preserve-3d;
   }
@@ -45,10 +45,8 @@ const Container  = styled.div `
 
   grid-gap: 25px;
   grid-auto-rows: 1fr;
-  padding: 2rem 2rem 2rem 0;
+  padding: 2rem 2rem 0 0;
   color: white;
-  line-height: 2;
-
   &>div{
     display:grid;
     transition: all 1.5s ease;
@@ -102,7 +100,7 @@ const Container  = styled.div `
     grid-auto-rows: 1fr;
     padding: 2rem;
     color: white;
-    line-height: 2;
+    line-height: ${props => 1. / 1.6};
     text-align: center;
     .led-panel-viewer{
       height:100%;

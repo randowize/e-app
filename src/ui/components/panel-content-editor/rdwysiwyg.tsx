@@ -1,43 +1,54 @@
 import * as React from 'react';
-import { EditorState } from 'draft-js';
+
+import {
+  EditorState
+} from 'draft-js';
+
 import { Editor } from 'react-draft-wysiwyg';
 import styled from 'styled-components';
 
-class PanelContentEditor extends React.Component<any, any> {
-  state = {
-    editorState: EditorState.createEmpty()
-  };
+interface IProps {
+  editorState: EditorState;
+  className: string;
+  getInnerDraftEditorRef: (HTMLElement) => any;
+  onEditorStateChange: (EditorState) => void;
+}
 
-  onEditorStateChange = editorState => {
-    this.setState({ editorState });
-  };
+class PanelContentEditor extends React.Component<IProps, any> {
 
   render() {
-    const { className } = this.props;
+    const { className, editorState, onEditorStateChange } = this.props;
     return (
-      <Editor
-        wrapperClassName={className}
-        editorRef={this.props.getInnerDraftEditorRef}
-        editorState={this.state.editorState}
-        onEditorStateChange={this.onEditorStateChange}
-        toolbar={{
-          inline: { inDropdown: true },
-          list: { inDropdown: true },
-          textAlign: { inDropdown: true },
-          link: { inDropdown: true },
-          history: { inDropdown: true }
-        }}
-      />
+      <React.Fragment>
+        <Editor
+          wrapperClassName={className}
+          editorRef={this.props.getInnerDraftEditorRef}
+          editorState={editorState}
+          onEditorStateChange={onEditorStateChange}
+          toolbar={{
+            list: { inDropdown: true },
+            link: { inDropdown: true }
+          }}
+        />
+      </React.Fragment>
     );
   }
 }
 
 interface ExtraProps {
-  getInnerDraftEditorRef: (any) => any;
+  height: number;
 }
-export default styled<ExtraProps, any>(PanelContentEditor)`
+export default styled<ExtraProps & IProps, any>(PanelContentEditor)`
+  height: ${props => props.height | 250}px;
   & .rdw-editor-main {
     background: black;
     border: dashed 1px;
+  }
+  & .rdw-dropdown-optionwrapper > li {
+    color: violet;
+  }
+  & .public-DraftStyleDefault-block {
+    margin: 0;
+    line-height: 1;
   }
 `;

@@ -3,7 +3,7 @@ import * as Rx from 'rxjs';
 export type EventName = 'debug'|
 'text-change' | 'toggle-preview'|
 'test' | 'refresh' | 'process-img'|
-'add-park' | 'update-details';
+'add-park' | 'update-details' | 'editor-state-change';
 
 export interface IEvent {
   type: EventName;

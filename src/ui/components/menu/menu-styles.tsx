@@ -4,7 +4,7 @@ export const Ul = styled.ul`
   list-style: ${(props: any) => (props.show ? 'block' : 'none')};
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   width: 48px;
   padding: 10px 5px;
   align-items: center;

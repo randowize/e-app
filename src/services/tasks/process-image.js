@@ -6,7 +6,6 @@ const led_matrix_1 = require("../utils/led-matrix");
 const Canvas = require("canvas");
 const matrix_1 = require("./matrix");
 const utils_1 = require("./utils");
-const Image = Canvas.Image;
 exports.processImgBuffer = payload => new Promise((res, rej) => {
     const nb64Img = payload.data.replace('data:image/png;base64,', '');
     const ob64Img = payload.odata.replace('data:image/png;base64,', '');
@@ -18,8 +17,6 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         const canv = new Canvas(img.bitmap.width, img.bitmap.height);
         const ctx = canv.getContext('2d');
         const ledM = new led_matrix_1.LedMatrix(canv, { x: payload.width, y: payload.height });
-        const bi = new Image(img.bitmap.width, img.bitmap.height);
-        bi.src = oimg.clone().greyscale().bitmap.data;
         if (ctx) {
             ctx.fillStyle = 'green';
         }
@@ -55,14 +52,8 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
             });
             pixelsArray[x].push(pix);
         });
-        const black = { r: 0, g: 0, b: 0, a: 1 };
-        const matrix = pixels.map(mapPixel).map(on => ({ on, color: on ? payload.color : black }));
-        const changed = matrix.map((o, i) => {
-            if (o.on !== payload.omatrix[i].on) {
-                return Object.assign({}, o, { idx: i, diff: [o.on, payload.omatrix[i].on] });
-            }
-            return null;
-        }).filter(o => o !== null);
+        const color = { r: 0, g: 0, b: 0, a: 1 };
+        const matrix = pixels.map(mapPixel).map(on => ({ on, color: on ? payload.color : color }));
         ledM.setData(matrix.slice());
         ledM.render();
         utils_1.dbgMessage(pixelsArray);
@@ -75,7 +66,6 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
             matrix,
             data: [...clone.bitmap.data],
             url,
-            changed,
             mtcp
         };
         res(result);
@@ -83,7 +73,9 @@ exports.processImgBuffer = payload => new Promise((res, rej) => {
         .catch(rej);
 });
 function mapPixel(pixel) {
-    if (pixel.r > 20 || pixel.g > 20 || pixel.b > 20)
+    if (pixel.r > 20 || pixel.g > 20 || pixel.b > 20) {
         return true;
+    }
+    ;
     return false;
 }

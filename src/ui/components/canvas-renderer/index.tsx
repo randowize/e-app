@@ -95,7 +95,7 @@ class Container extends React.Component<IProps, any> {
         y: 15,
         x: 20,
         lineHeight: 20
-      })
+      });
       const ndata = this.canvas.toDataURL();
       this.setState({
         src: ndata
@@ -124,7 +124,7 @@ class Container extends React.Component<IProps, any> {
         />
         <img
           src={this.state.src}
-          alt='canvas generated'
+          alt="canvas generated"
           height={`${this.props.height}px`}
           width={`${this.props.width}px`}
           style={{ height: '100%', width: '100%', display: 'none' }}

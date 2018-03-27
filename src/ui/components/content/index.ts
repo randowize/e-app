@@ -1,3 +1,3 @@
-import Component from './editor-xp';
+import Component from '../editors/editor-xp';
 
 export default Component;
