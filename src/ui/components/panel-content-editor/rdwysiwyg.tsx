@@ -39,10 +39,13 @@ interface ExtraProps {
   height: number;
 }
 export default styled<ExtraProps & IProps, any>(PanelContentEditor)`
-  height: ${props => props.height | 250}px;
   & .rdw-editor-main {
     background: black;
     border: dashed 1px;
+    height:calc(100% - 122px);
+  }
+  &.rdw-editor-wrapper{
+    height: 350px;
   }
   & .rdw-dropdown-optionwrapper > li {
     color: violet;

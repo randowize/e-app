@@ -5,14 +5,16 @@ const Container  = styled.div `
   display: grid;
   flex-grow:2;
   transition: all 0.5s ease;
-  grid-template-columns: 1fr[options-end] 3fr[content-end];
+  grid-template-columns: 1fr;
   height: calc(100vh - ${(props: any) => props.statusBarSize || 25}px);
+
   & .d-wrapper{
     perspective: 400px;
     transform-style: preserve-3d;
   }
 
   &.has-options{
+    grid-template-columns: 1fr[options-end] 3fr[content-end];
     &> .options{
       opacity:1;
       display:initial;
@@ -33,7 +35,6 @@ const Container  = styled.div `
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    margin-top:-2rem;
     & div {
       box-sizing: border-box !important;
     }
@@ -43,9 +44,9 @@ const Container  = styled.div `
     display:none;
   }
 
-  grid-gap: 25px;
+  grid-gap: 1px;
   grid-auto-rows: 1fr;
-  padding: 2rem 2rem 0 0;
+  padding: 2rem 0 0 0;
   color: white;
   &>div{
     display:grid;

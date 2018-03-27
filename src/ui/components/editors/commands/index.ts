@@ -1,9 +1,22 @@
 import * as Rx from 'rxjs';
+import { IStateGetter, IStateCommitter, IAction } from './interfaces';
 
-export function registerEditorKeyboardBindings(elt: HTMLDivElement) {
-  return (key: string, action) => {
-    return Rx.Observable.fromEvent<KeyboardEvent>(elt, 'keyup')
-      .filter(e => e.ctrlKey && e.code === `Key${key.toUpperCase()}`)
-      .subscribe(action);
+export const registerEditorCommandShortcuts = (elt: HTMLDivElement) => (
+  g: IStateGetter,
+  t: IStateCommitter
+) => {
+  const subscriptions = new Map();
+  return (key: string, action: IAction) => {
+    const subscription =  Rx.Observable.fromEvent<KeyboardEvent>(elt, 'keyup')
+      .do(e => e.stopPropagation())
+      .filter(
+        e => e.altKey && e.ctrlKey && e.code === `Key${key.toUpperCase()}`
+      )
+      .subscribe(e => action(g, t));
+      subscriptions.set(key, () => subscription.unsubscribe());
+      return () => {
+       subscriptions.get(key)();
+       subscriptions.delete(key);
+      };
   };
-}
+};

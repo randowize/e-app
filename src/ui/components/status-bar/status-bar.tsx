@@ -32,12 +32,13 @@ const StyledStatusComp = styled<StatusProps, any>(StatusComp)`
   bottom: 0;
   z-index: 25;
   padding: 0 1rem;
-  background-color: #333;
+  background-color: rgba(0,0,0,0.85);
+  border-top: solid 1px;
   & .status-pills{
     display:grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 5px;
-    width: 50px;
+    width: 16px;
     height: 100%;
     align-items: center;
   }

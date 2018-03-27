@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ucompose from 'ucompose';
 import styled, { css } from 'styled-components';
 
-import { EditorState, convertToRaw, Modifier } from 'draft-js';
+import { EditorState, convertToRaw } from 'draft-js';
 
 import { convertDomNodeToImage } from '../dom-to-img/dom-to-img';
 
@@ -20,7 +20,8 @@ import DomToCanvas from '../dom-to-img/dom-to-img';
 import PanelContentEditor from '../panel-content-editor/rdwysiwyg';
 
 import Tasks from '../../../services/tasks';
-import { registerEditorKeyboardBindings } from './commands';
+import { registerEditorCommandShortcuts } from './commands';
+import { addChar } from './commands/addSpecialChar';
 import {
   editorStateChangeStream,
   refreshPreview
@@ -37,21 +38,11 @@ const loop_mixin = (times, fn) => {
 const Content = styled.div`
   display: grid;
   grid-template-columns: 3fr 2fr;
-  grid-template-rows: 1fr;
+  align-items: center;
   padding: 10px;
   grid-gap: 20px;
-  & div.preview {
-    background: #162333;
-    border-radius: 12px;
-    height: 180px;
-    display: grid;
-    & > img {
-      width: 100%;
-      height: 100%;
-    }
-  }
 `;
-//   ${/*grid-column: 1/-1;*/ 1}
+
 const Extras: any = styled.div`
   display: grid;
   grid-template-areas:
@@ -65,7 +56,7 @@ const Extras: any = styled.div`
         & > button:nth-of-type(${i + 1}) {
           grid-area: button${i + 1};
         }`;
-    })}; 
+    })};
 `;
 export type colsOrRows = 'cols' | 'rows';
 
@@ -77,6 +68,28 @@ export interface IState {
   [index: string]: any;
 }
 
+const PreviewWapper = styled.div`
+  &.preview {
+    background: #162333;
+    height: 240px;
+    display: grid;
+    border: solid 1px;
+    box-shadow: 0 0 10px 0 green;
+    position: relative;
+    & > img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+`;
+
+const Preview = ({ src }) => {
+  return (
+    <PreviewWapper className="preview">
+      <img src={src} />
+    </PreviewWapper>
+  );
+};
 class DraftEditorController extends React.Component<any, IState> {
   state: IState = { src: '', editorState: EditorState.createEmpty() };
   store: LedDrawerManager;
@@ -128,23 +141,6 @@ class DraftEditorController extends React.Component<any, IState> {
     this.setState({ editorState });
   };
 
-  addCurrencySign = (charCode: number = 0x20ba /*₺ (Decimal code : 8378)*/) => {
-    const { editorState } = this.state;
-    const { onEditorStateChange: onchange } = this;
-    const contentState = Modifier.replaceText(
-      editorState.getCurrentContent(),
-      editorState.getSelection(),
-      String.fromCharCode(charCode),
-      editorState.getCurrentInlineStyle()
-    );
-    const newState = EditorState.push(
-      editorState,
-      contentState,
-      'insert-characters'
-    );
-    onchange(newState);
-  };
-
   componentDidMount() {
     client
       .connect()
@@ -159,12 +155,13 @@ class DraftEditorController extends React.Component<any, IState> {
         })
       );
     this.sendImageStream();
-    const contentArea: any = document.querySelector(
-      '.public-DraftEditor-content'
+    const { editorContainer } = this.editorRef;
+    const registerCommand = registerEditorCommandShortcuts(editorContainer)(
+      () => this.state.editorState,
+      this.onEditorStateChange
     );
-    registerEditorKeyboardBindings(contentArea)('t', () =>
-      this.addCurrencySign()
-    );
+    registerCommand('t', addChar());
+
   }
   sendImageStream = () => {
     return editorStateChangeStream
@@ -201,9 +198,7 @@ class DraftEditorController extends React.Component<any, IState> {
             editorState={this.state.editorState}
             onEditorStateChange={this.onEditorStateChange}
           />
-          <div className="preview">
-            <img src={this.state.url} />
-          </div>
+          <Preview src={this.state.url} />
           <Extras buttonCount={3}>
             <Form update={this.props.addPark} />
             <button
@@ -267,3 +262,11 @@ const injectors = [
   selectProps('ledStore')(...props)
 ];
 export default ucompose(injectors)(DraftEditorController);
+
+/**
+ * Hoşgeldiniz
+
+😍😗🤗🤔😣
+
+₺ € $
+ */

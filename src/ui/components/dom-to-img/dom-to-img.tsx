@@ -4,10 +4,12 @@ import * as domimg from 'dom-to-image';
 
 const Div = styled.div`
   border: solid 5px red;
-  display: block !important;
+  display: block ;
   background: black;
   height: 160px;
-  width: 160px;
+  width: 480px;
+  position: absolute;
+  visibility: hidden;
   justify-self:center;
   align-self: center;
   & img {
