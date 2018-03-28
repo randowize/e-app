@@ -46,9 +46,9 @@ const Content = styled.div`
 const Extras: any = styled.div`
   display: grid;
   grid-template-areas:
-    '... form form form ...'
-    '... button1 button2 button3 ...';
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    'form form form'
+    'button1 button2 button3';
+  grid-template-columns: repeat(auto-fit, minmax(max-content, 1fr));
   grid-gap: 10px;
   ${(props: any) =>
     loop_mixin(props.buttonCount, i => {
@@ -71,7 +71,7 @@ export interface IState {
 const PreviewWapper = styled.div`
   &.preview {
     background: #162333;
-    height: 240px;
+    height: 250px;
     display: grid;
     border: solid 1px;
     box-shadow: 0 0 10px 0 green;
@@ -97,7 +97,7 @@ class DraftEditorController extends React.Component<any, IState> {
   vtm: number = 1;
   pixelSizeModifier: any;
   marginModifier: any;
-
+  editorContent: HTMLDivElement;
   constructor(props) {
     super(props);
     this.pixelSizeModifier = props.propModifier('pixelSize');
@@ -156,6 +156,8 @@ class DraftEditorController extends React.Component<any, IState> {
       );
     this.sendImageStream();
     const { editorContainer } = this.editorRef;
+    this.editorContent = editorContainer.firstElementChild.firstElementChild;
+
     const registerCommand = registerEditorCommandShortcuts(editorContainer)(
       () => this.state.editorState,
       this.onEditorStateChange
@@ -176,10 +178,12 @@ class DraftEditorController extends React.Component<any, IState> {
       .subscribe((d: any) => refreshPreview(d.url, d.mtcp));
   };
   rasterizeEditorState = async () => {
-    const { editorRef } = this;
-    if (editorRef) {
-      const src = await convertDomNodeToImage(editorRef.editorContainer);
-      const __html = editorRef.editorContainer.innerHTML;
+    const { editorContent }  = this;
+    if (editorContent) {
+      const {left: x, top: y, width, height} = editorContent.getBoundingClientRect();
+      console.log(x, y, width, height);
+      const src = await convertDomNodeToImage(editorContent);
+      const __html = editorContent.innerHTML;
       this.setState({ src, __html }, () => dispatch('editor-state-change')());
     }
   };
@@ -198,7 +202,6 @@ class DraftEditorController extends React.Component<any, IState> {
             editorState={this.state.editorState}
             onEditorStateChange={this.onEditorStateChange}
           />
-          <Preview src={this.state.url} />
           <Extras buttonCount={3}>
             <Form update={this.props.addPark} />
             <button
@@ -208,6 +211,7 @@ class DraftEditorController extends React.Component<any, IState> {
             >
               Ön İzle
             </button>
+            <button onClick={this.rasterizeEditorState}>Rasterize</button> 
             <button
               onClick={() => {
                 client.sendMatrix(this.state.mt);
@@ -215,9 +219,8 @@ class DraftEditorController extends React.Component<any, IState> {
             >
               Sunucuya Gönder
             </button>
-
-            <button onClick={this.rasterizeEditorState}>Rasterize</button>
           </Extras>
+          <Preview src={this.state.url} />
           <DomToCanvas src={this.state.src} innerRef={this.getImgRef} />
         </Content>
       </Layout>
