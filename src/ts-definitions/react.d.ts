@@ -13,4 +13,6 @@ declare module 'react' {
     Consumer: Consumer<T>;
   }
   function createContext<T>(defaultValue: T, calculateChangedBits?: (prev: T, next: T) => number): Context<T>;
+  function createRef (): (node: any) => any;
+  function forwardRef(sfcr: (props: any, ref: any) => any) : any;
 }
