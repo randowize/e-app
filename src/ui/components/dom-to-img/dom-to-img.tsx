@@ -7,7 +7,7 @@ const Div = styled.div`
   display: block ;
   background: black;
   height: 160px;
-  width: 480px;
+  width: 160px;
   position: absolute;
   visibility: hidden;
   justify-self:center;
