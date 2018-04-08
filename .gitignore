@@ -10,7 +10,6 @@ src-xlab
 .vscode
 .env
 src/server
-src/api
 .gitignore
 *.map
 src/resources/P10-2.bmp
