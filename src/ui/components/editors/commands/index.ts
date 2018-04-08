@@ -1,12 +1,12 @@
 import * as Rx from 'rxjs';
 import { IStateGetter, IStateCommitter, IAction } from './interfaces';
 
-export const registerEditorCommandShortcuts = (elt: HTMLDivElement) => (
+export const registerActionsShortcuts = (elt: HTMLDivElement) => (
   g: IStateGetter,
   t: IStateCommitter
 ) => {
   const subscriptions = new Map();
-  return (key: string, action: IAction) => {
+  return (key: string, action: IAction, desc?: string) => {
     const subscription =  Rx.Observable.fromEvent<KeyboardEvent>(elt, 'keyup')
       .do(e => e.stopPropagation())
       .filter(

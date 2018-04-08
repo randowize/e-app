@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as ucompose from 'ucompose';
 import styled, { css } from 'styled-components';
+import { EditorState } from 'draft-js';
 
-import { EditorState, convertToRaw } from 'draft-js';
+import { domvas, convertBlobToDataURI } from '../../../services/dom-to-image';
 
-import { convertDomNodeToImage } from '../dom-to-img/dom-to-img';
+// import { convertDomNodeToImage } from '../dom-to-img/dom-to-img';
 
 import { selectProps } from '../../../utils/props-selector';
 import Layout from '../content/layout';
@@ -14,18 +15,19 @@ import { LedDrawerManager } from '../../../utils/led-matrix/led/store';
 import Form from '../form';
 import {
   baseObservable,
-  dispatch
-} from '../../../shared/streams/base-observable';
-import DomToCanvas from '../dom-to-img/dom-to-img';
+  dispatch,
+  observeResizeOfElement
+} from '../../../common/streams/base-observable';
+// import DomToCanvas from '../dom-to-img/dom-to-img';
 import PanelContentEditor from '../panel-content-editor/rdwysiwyg';
 
 import Tasks from '../../../services/tasks';
-import { registerEditorCommandShortcuts } from './commands';
+import { registerActionsShortcuts } from './commands';
 import { addChar } from './commands/addSpecialChar';
 import {
-  editorStateChangeStream,
-  refreshPreview
-} from '../../../shared/streams/process-text';
+  editorStateChange$,
+  dispatchRefreshPreview
+} from '../../../common/streams';
 
 const loop_mixin = (times, fn) => {
   const result: any = [];
@@ -65,33 +67,39 @@ export interface IState {
   src?: string;
   editorState: EditorState;
   url?: string;
+  toolbarHeight?: number;
+  toolbarClassName?: string;
   [index: string]: any;
 }
 
-const PreviewWapper = styled.div`
-  &.preview {
-    background: #162333;
-    height: 250px;
-    display: grid;
-    border: solid 1px;
-    box-shadow: 0 0 10px 0 green;
-    position: relative;
-    & > img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-`;
+// const PreviewWapper = styled.div`
+//   &.preview {
+//     background: #162333;
+//     height: 250px;
+//     display: grid;
+//     border: solid 1px;
+//     box-shadow: 0 0 10px 0 green;
+//     position: relative;
+//     & > img {
+//       width: 100%;
+//       height: 100%;
+//     }
+//   }
+// `;
 
-const Preview = ({ src }) => {
-  return (
-    <PreviewWapper className="preview">
-      <img src={src} />
-    </PreviewWapper>
-  );
-};
+// const Preview = ({ src }) => {
+//   return (
+//     <PreviewWapper className="preview">
+//       <img src={src} />
+//     </PreviewWapper>
+//   );
+// };
 class DraftEditorController extends React.Component<any, IState> {
-  state: IState = { src: '', editorState: EditorState.createEmpty() };
+  state: IState = {
+    src: '',
+    editorState: EditorState.createEmpty(),
+    toolbarClassName: 'custom_editor_toolbar'
+   };
   store: LedDrawerManager;
   hzm: number = 1;
   vtm: number = 1;
@@ -105,7 +113,7 @@ class DraftEditorController extends React.Component<any, IState> {
   }
 
   editorRef;
-  imgRef;
+  imgRef: HTMLImageElement;
 
   notify = () => {
     const __html = this.editorRef.editorContainer.innerHTML.replace(
@@ -120,24 +128,26 @@ class DraftEditorController extends React.Component<any, IState> {
   getImgRef = ref => {
     this.imgRef = ref;
   };
-  getPayload = () => {
+  getPayload = (src) => {
+    const width = this.imgRef ? this.imgRef.clientWidth : 160;
+    const height = this.imgRef ? this.imgRef.clientHeight : 160;
     return {
-      data: this.state.src,
-      width: this.imgRef.clientWidth,
-      height: this.imgRef.clientHeight,
-      odata: this.state.src,
+      data: src,
+      width,
+      height,
+      odata: src,
       color: {
         r: 0,
         g: 0,
         b: 0,
         a: 1
-      }
+      },
+      blob: this.state.blob
     };
   };
 
   onEditorStateChange = (editorState: EditorState) => {
     this.notify();
-    console.log(convertToRaw(editorState.getCurrentContent()));
     this.setState({ editorState });
   };
 
@@ -147,7 +157,7 @@ class DraftEditorController extends React.Component<any, IState> {
       .then(console.log)
       .catch(console.error);
     baseObservable
-      .filter(e => e.type === 'refresh')
+      .filter(e => e.type === 'refresh-preview')
       .map(d => d.data[1])
       .subscribe(mt =>
         this.setState({
@@ -158,33 +168,53 @@ class DraftEditorController extends React.Component<any, IState> {
     const { editorContainer } = this.editorRef;
     this.editorContent = editorContainer.firstElementChild.firstElementChild;
 
-    const registerCommand = registerEditorCommandShortcuts(editorContainer)(
+    const registerShorcut = registerActionsShortcuts(editorContainer)(
       () => this.state.editorState,
       this.onEditorStateChange
     );
-    registerCommand('t', addChar());
+    registerShorcut('t', addChar());
+    const toolbar  = document.querySelector(`.${this.state.toolbarClassName}`);
+    if (toolbar) {
+      observeResizeOfElement(toolbar)
+      .subscribe(e => {
+        this.setState({
+          toolbarHeight: e.contentRect.height
+        });
+      });
+    }
 
   }
   sendImageStream = () => {
-    return editorStateChangeStream
+    return editorStateChange$
       .debounceTime(1000)
-      .map(o => this.state.src || '')
+      .switchMap(() => convertBlobToDataURI(this.state.blob))
       .filter(o => !!o)
-      .map(this.getPayload)
       .distinctUntilChanged()
+      .map(this.getPayload)
       .do(p => this.props.sendIpcMessage('process-img', p))
       .switchMap(payload => Tasks.processImgBuffer(payload))
-      .do(d => this.setState({ url: d.url }))
-      .subscribe((d: any) => refreshPreview(d.url, d.mtcp));
+      // .do(d => this.setState({ url: d.url }))
+      .subscribe((d: any) => dispatchRefreshPreview(d.url, d.mtcp));
   };
   rasterizeEditorState = async () => {
     const { editorContent }  = this;
     if (editorContent) {
-      const {left: x, top: y, width, height} = editorContent.getBoundingClientRect();
-      console.log(x, y, width, height);
-      const src = await convertDomNodeToImage(editorContent);
-      const __html = editorContent.innerHTML;
-      this.setState({ src, __html }, () => dispatch('editor-state-change')());
+      // const {left: x, top: y, width, height} = editorContent.getBoundingClientRect();
+      // const rect = {x, y, width, height};
+      // this.props.sendIpcMessage('capture-area', rect);
+      /* const canvas: HTMLCanvasElement = await html2c(editorContent,
+      {
+        backgroundColor: '#000000',
+        removeContainer: false
+      })*/;
+      //const src = await convertDomNodeToImage(editorContent);
+      // const src = canvas.toDataURL();
+      // const __html = editorContent.innerHTML;
+      // this.setState({ src, __html }, () => dispatch('editor-state-change')());
+      domvas.toImage(editorContent)
+      .then(({src, blob}) => {
+        this.setState({src, blob}, () => dispatch('editor-state-change')());
+      });
     }
   };
   render() {
@@ -201,6 +231,8 @@ class DraftEditorController extends React.Component<any, IState> {
             getInnerDraftEditorRef={this.getEditorRef}
             editorState={this.state.editorState}
             onEditorStateChange={this.onEditorStateChange}
+            toolbarHeight = {this.state.toolbarHeight}
+            toolbarClassName={this.state.toolbarClassName}
           />
           <Extras buttonCount={3}>
             <Form update={this.props.addPark} />
@@ -220,8 +252,8 @@ class DraftEditorController extends React.Component<any, IState> {
               Sunucuya Gönder
             </button>
           </Extras>
-          <Preview src={this.state.url} />
-          <DomToCanvas src={this.state.src} innerRef={this.getImgRef} />
+            {/*<Preview src={this.state.url} />
+         <DomToCanvas src={this.state.src} innerRef={this.getImgRef} />*/}
         </Content>
       </Layout>
     );
