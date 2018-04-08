@@ -1,8 +1,8 @@
 //import {observable, computed, action} from 'mobx';
 //import * as Rx from 'rxjs';
 //import {delay} from '../../utils/timers';
-import { refreshStream } from '../../shared/streams/process-text';
-import { ipcMessageSenderFactory } from '../../shared/streams/rx-ipc';
+import { refreshPreview$ } from '../../common/streams';
+import { ipcMessageSenderFactory } from '../../common/streams/rx-ipc';
 import {ipcRenderer} from 'electron';
 
 import MenuStore from './menu';
@@ -15,8 +15,8 @@ class Store {
     sendIpcMessage = ipcMessageSenderFactory(ipcRenderer);
 
     constructor() {
-        refreshStream.subscribe(d => {
-            this.sendIpcMessage('refresh', d);
+        refreshPreview$.subscribe(d => {
+            this.sendIpcMessage('refresh-preview', d);
         });
     }
  /*

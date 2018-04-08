@@ -15,7 +15,6 @@ function connect() {
 }
 exports.connect = connect;
 client.on('data', function (data) {
-    console.log('Received: ' + data);
 });
 client.on('close', function () {
     console.log('Connection closed');

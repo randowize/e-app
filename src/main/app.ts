@@ -1,22 +1,33 @@
 require('dotenv').config();
 
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, screen , ipcMain} from 'electron';
 import installExtension, {
   REACT_DEVELOPER_TOOLS
 } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
 import * as cp from 'child_process';
 import * as path from 'path';
-import { baseObservable, EventName } from '../shared/streams/base-observable';
-import { ipcMessageSenderFactory } from '../shared/streams/rx-ipc';
-
+import { EventName } from '../common/streams/base-observable';
+import {
+  debugStream$,
+  areaCapture$,
+  refreshPreview$,
+  processImageStream$,
+  togglePreviewStream$
+} from '../common/streams';
+import { ipcMessageSenderFactory, rxifyIpcModule } from '../common/streams/rx-ipc';
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
 let previewWindow: Electron.BrowserWindow | null = null;
 //let modelWindow: Electron.BrowserWindow | null = null;
-let sendPreviewIpcMsg: (evtName: EventName, ...data) => void;
-let sendMatrixIpcMsg: (evtName: EventName, ...data) => void;
+
+rxifyIpcModule(ipcMain);
+
+let sendIpcMsgToPreviewWindow: (evtName: EventName, ...data) => void;
+
+let sendIpcMsgToMainWindow: (evtName: EventName, ...data) => void;
+
 const isDevMode = process.execPath.match(/[\\/]electron/);
 //const fop : cp.ForkOptions;
 const pname = path.resolve(__dirname, '..', 'services', 'worker.js');
@@ -25,40 +36,56 @@ let img_proc_worker: cp.ChildProcess;
 const setupIpcCom = () => {
   // configureIpcMessage(ipcMain);
   if (previewWindow && mainWindow) {
-    sendPreviewIpcMsg = ipcMessageSenderFactory(previewWindow.webContents);
-    sendMatrixIpcMsg = ipcMessageSenderFactory(mainWindow.webContents);
-    const refreshStream = baseObservable.filter(m => m.type === 'refresh');
-    const processImageStream = baseObservable.filter(
-      m => m.type === 'process-img'
+    sendIpcMsgToPreviewWindow = ipcMessageSenderFactory(
+      previewWindow.webContents
     );
-    const togglePreviewStream = baseObservable.filter(
-      m => m.type === 'toggle-preview'
-    );
-    const debugStream = baseObservable.filter(m => m.type === 'debug');
+    sendIpcMsgToMainWindow = ipcMessageSenderFactory(mainWindow.webContents);
 
-    debugStream.subscribe(d => console.log(d));
+    debugStream$.subscribe(d => console.log(d));
 
-    refreshStream.subscribe(e => {
-      if (previewWindow) {
-        sendPreviewIpcMsg(e.type, ...e.data);
-      }
-      /*if (mainWindow) {
-        sendMatrixIpcMsg(e.type, ...e.data);
-      }*/
-    });
-
-    processImageStream.subscribe(e => {
+    processImageStream$.subscribe(e => {
       if (img_proc_worker.connected) {
         img_proc_worker.send({ type: 'process-img', payload: e.data[0] });
       }
     });
 
-    togglePreviewStream.subscribe(e => {
+    togglePreviewStream$.subscribe(e => {
       if (previewWindow) {
         if (previewWindow.isVisible()) return previewWindow.hide();
         return previewWindow.show();
       }
     });
+
+    refreshPreview$.subscribe(e => {
+      if (previewWindow) {
+        sendIpcMsgToPreviewWindow(e.type, e.data);
+      }
+      /*if (mainWindow) {
+        sendMatrixIpcMsg(e.type, ...e.data);
+      }*/
+    });
+    const screenScaleFactor = screen.getPrimaryDisplay().scaleFactor;
+    function formatRect({ x, y, width, height }) {
+      return {
+        x: Math.round(x),
+        y: Math.round(y * screenScaleFactor),
+        height: Math.floor(height * screenScaleFactor),
+        width: Math.floor(width * screenScaleFactor)
+      };
+    }
+    areaCapture$.subscribe(({ rect }) => {
+      try {
+        if (mainWindow) {
+          mainWindow.webContents.capturePage(formatRect(rect), img => {
+            const src = img.toDataURL();
+            sendIpcMsgToMainWindow('rasterized-content', ...[{ src }]);
+            // sendIpcMsgToPreviewWindow('refresh', ...[{ src }]);
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, console.log);
   }
 };
 
@@ -76,11 +103,13 @@ const setupWorker = () => {
   img_proc_worker.on('error', console.log);
 };
 
-const createWindow = async () => {
+const createWindows = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    //fullscreen: true,
+    resizable: true,
     webPreferences: {
       experimentalFeatures: true,
       experimentalCanvasFeatures: true
@@ -102,22 +131,9 @@ const createWindow = async () => {
     alwaysOnTop: true
   });
 
-  /*modelWindow = new BrowserWindow({
-    width: 320,
-    height: 240,
-    webPreferences: {
-      experimentalFeatures: true
-    },
-    frame: true,
-    title: 'Model',
-    movable: true,
-    show: true
-  });*/
-
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/../screens/index.html`);
   previewWindow.loadURL(`file://${__dirname}/../screens/preview.html`);
-  //modelWindow.loadURL(`file://${__dirname}/../screens/prototyping.html`);
 
   // Open the DevTools.
   if (isDevMode) {
@@ -151,11 +167,10 @@ const createWindow = async () => {
 
 const init = () => {
   if (isDevMode) enableLiveReload({ strategy: 'react-hmr' });
-
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', createWindow);
+  app.on('ready', createWindows);
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
@@ -170,7 +185,7 @@ const init = () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
-      createWindow();
+      createWindows();
     }
   });
 };

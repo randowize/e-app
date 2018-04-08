@@ -63,7 +63,7 @@ function getMatrixTest(img) {
                             carr[satir] = [];
                         carr[satir][satir_1[blok * 4 + sutun]] = pixel;
                     }
-                    line += pixel + ',';
+                    line = line + pixel + ',';
                 }
                 if (satir < 3) {
                     satir++;
@@ -101,7 +101,7 @@ function getMatrixFromPixelsArray(pixels, w, h) {
         function applyToArray(carr, dx = 0, dy = 0) {
             let pixel_x, pixel_y, pixel;
             let X, Y, sutun;
-            let line;
+            let line = '';
             X = 4;
             Y = 16;
             let pixelColor;
@@ -122,7 +122,7 @@ function getMatrixFromPixelsArray(pixels, w, h) {
                             carr[satir] = [];
                         carr[satir][satir_1[blok * 4 + sutun]] = pixel;
                     }
-                    line += pixel + ',';
+                    line = line + pixel + ',';
                 }
                 if (satir < 3) {
                     satir++;
@@ -141,7 +141,8 @@ function getMatrixFromPixelsArray(pixels, w, h) {
         applyToArray(dizi3, 0, 16);
         applyToArray(dizi4, 32, 16);
         const mat = [buildLines(dizi2, dizi1), buildLines(dizi4, dizi3)];
-        return mat.join(',');
+        const resulmat = mat.join(',');
+        return resulmat;
     });
 }
 exports.getMatrixFromPixelsArray = getMatrixFromPixelsArray;

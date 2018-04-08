@@ -20,7 +20,7 @@ import { LedDrawerManager } from '../../utils/led-matrix/led/store';
 import { selectImage } from '../../utils/electron';
 import { getRGBA } from '../../utils/led-matrix/led/color';
 //import { ipcMessageSenderFactory } from '../../shared/streams/rx-ipc';
-import { processText } from '../../shared/streams/base-observable';
+import { processText } from '../../common/streams/base-observable';
 
 //let sendIpcMessage = ipcMessageSenderFactory(ipcRenderer);
 
