@@ -1,16 +1,14 @@
 import { ipcRenderer } from 'electron';
+import { rxifyIpcModule } from './common/streams/rx-ipc';
 
-import { baseObservable } from './shared/streams/base-observable';
-import { addRxStreamCapabilityToIpcModule } from './shared/streams/rx-ipc';
+rxifyIpcModule(ipcRenderer);
 
-addRxStreamCapabilityToIpcModule(ipcRenderer);
+import { refreshPreview$ } from './common/streams';
 
 const img: any = document.getElementById('img');
 
-baseObservable
-  .filter(e => e.type === 'refresh')
-  .do(console.log)
-  .map(e => e.data[0].src)
+refreshPreview$
+  .map(e => e.data.data)
   .switchMap(src => fetch(src).then(res => res.blob()))
   .subscribe(blob => {
     img.src = URL.createObjectURL(blob);
