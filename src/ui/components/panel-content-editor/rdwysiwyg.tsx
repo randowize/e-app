@@ -10,6 +10,7 @@ import styled from 'styled-components';
 interface IProps {
   editorState: EditorState;
   className: string;
+  toolbarClassName: string;
   getInnerDraftEditorRef: (HTMLElement) => any;
   onEditorStateChange: (EditorState) => void;
 }
@@ -17,13 +18,14 @@ interface IProps {
 class PanelContentEditor extends React.Component<IProps, any> {
 
   render() {
-    const { className, editorState, onEditorStateChange } = this.props;
+    const {toolbarClassName, className: wrapperClassName, editorState, onEditorStateChange } = this.props;
     return (
       <React.Fragment>
         <Editor
-          wrapperClassName={className}
+          wrapperClassName={wrapperClassName}
           editorRef={this.props.getInnerDraftEditorRef}
           editorState={editorState}
+          toolbarClassName={toolbarClassName}
           onEditorStateChange={onEditorStateChange}
           toolbar={{
             list: { inDropdown: true },
@@ -37,12 +39,13 @@ class PanelContentEditor extends React.Component<IProps, any> {
 
 interface ExtraProps {
   height: number;
+  toolbarHeight?: number;
 }
 export default styled<ExtraProps & IProps, any>(PanelContentEditor)`
   & .rdw-editor-main {
     background: black;
     border: dashed 1px;
-    height:calc(100% - 122px);
+    height:calc(100% - ${props => props.toolbarHeight || 122}px);
   }
   &.rdw-editor-wrapper{
     height: 350px;

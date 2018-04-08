@@ -22,3 +22,6 @@ typings
 typings/index.d.ts
 vdom
 yarn-error.log
+img.data
+.index.tsx.swp
+data.json
