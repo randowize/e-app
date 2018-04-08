@@ -25,3 +25,5 @@ yarn-error.log
 img.data
 .index.tsx.swp
 data.json
+perf-processing.ts
+cp.ts
